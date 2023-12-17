@@ -29,6 +29,14 @@ router.route("/create-parent-student")
     });
   })
 
+router.route("/create-teacher")
+  .post((req, res, next) => {
+    adminController.registerTeacher(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 router.all("*", index);
 
 module.exports = router;
