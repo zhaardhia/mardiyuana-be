@@ -10,6 +10,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
+    status: {
+      type: DataTypes.ENUM('ACTIVE','INACTIVE'),
+      allowNull: false
+    },
     createdDate: {
       type: DataTypes.DATE,
       allowNull: true

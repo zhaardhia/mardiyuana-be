@@ -7,7 +7,7 @@ const { body, param, query, validationResult } = require("express-validator");
 const express = require("express");
 const router = express.Router();
 
-const curriculumController = require("../../controllers/curriculum");
+const courseController = require("../../controllers/course");
 
 const index = function (req, res, next) {
   response.res404(res);
@@ -15,25 +15,18 @@ const index = function (req, res, next) {
 
 router.route("/")
   .post((req, res, next) => {
-    curriculumController.insertUpdateCurriculum(req, res).catch((error) => {
+    courseController.insertUpdateCourse(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-  .get((req, res, next) => {
-    curriculumController.getAllCurriculum(req, res).catch((error) => {
-      console.error(error);
-      return response.res500(res, "Internal system error, please try again later!");
-    });
-  })
+  // .get((req, res, next) => {
+  //   curriculumController.getAllCurriculum(req, res).catch((error) => {
+  //     console.error(error);
+  //     return response.res500(res, "Internal system error, please try again later!");
+  //   });
+  // })
 
-router.route("/activate")
-  .put((req, res, next) => {
-    curriculumController.activateCurriculum(req, res).catch((error) => {
-      console.error(error);
-      return response.res500(res, "Internal system error, please try again later!");
-    });
-  })
 
 router.all("*", index);
 
