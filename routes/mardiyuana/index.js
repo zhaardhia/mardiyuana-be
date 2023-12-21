@@ -15,6 +15,7 @@ router.all("/connect", (req, res, next) => {
 router.use("/test", require("./test"));
 router.use("/admin", require("./admin"));
 router.use("/enrollment-student", require("./enrollment-student"))
+router.use("/curriculum", require("./curriculum"));
 
 router.all('*', index);
 
