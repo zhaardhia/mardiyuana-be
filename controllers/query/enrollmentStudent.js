@@ -37,3 +37,26 @@ exports.insertEnrollmentStudent = async ({
     updatedDate: new Date()
   })
 }
+
+exports.updateClassOrAcademicYearEnrollmentStudent = async ({
+  id,
+  classId,
+  className,
+  academicYearId,
+  academicYear,
+}) => {
+  return enrollment_student.update(
+    {
+      classId,
+      className,
+      academicYearId,
+      academicYear,
+      updatedDate: new Date()
+    }, 
+    {
+      where: {
+        id
+      }
+    }
+  )
+}

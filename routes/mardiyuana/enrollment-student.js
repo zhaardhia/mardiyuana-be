@@ -13,9 +13,9 @@ const index = function (req, res, next) {
   response.res404(res);
 };
 
-router.route("/insert-enrollment-student")
+router.route("/insert-update-enrollment-student")
   .post((req, res, next) => {
-    enrollmentStudentController.insertEnrollmentStudent(req, res).catch((error) => {
+    enrollmentStudentController.insertUpdateEnrollmentStudent(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
