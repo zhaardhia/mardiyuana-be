@@ -14,6 +14,7 @@ router.all("/connect", (req, res, next) => {
 // router.all('/', index);
 router.use("/test", require("./test"));
 router.use("/admin", require("./admin"));
+router.use("/enrollment-student", require("./enrollment-student"))
 
 router.all('*', index);
 
