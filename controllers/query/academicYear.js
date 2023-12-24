@@ -9,6 +9,7 @@ const {
 } = require("../../components/database");
 
 exports.checkAcademicYearIsRegistered = async (academicYearId) => {
+  console.log({academicYearId})
   return academic_year.findOne({
     raw: true,
     where: {

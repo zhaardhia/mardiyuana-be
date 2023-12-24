@@ -31,7 +31,7 @@ exports.insertEnrollmentTeacher = async (req, res, next) => {
   }
 
   try {
-    const { teacherId, academicYearId, classIds, courseId, isHomeroom, homeRoomClassId } = req.body;
+    const { teacherId, academicYearId, classIds, courseId, isHomeRoom, homeRoomClassId } = req.body;
 
     const checkTeacher = await checkTeacherFullname(teacherId)
     if (!checkTeacher) return response.res200(res, "001", `Guru belum terdaftar.`)
@@ -39,7 +39,7 @@ exports.insertEnrollmentTeacher = async (req, res, next) => {
     const checkAcademicYear = await checkAcademicYearIsRegistered(academicYearId)
     if (!checkAcademicYear) return response.res200(res, "001", `Tahun ajaran belum terdaftar.`)
 
-    if (isHomeroom) {
+    if (isHomeRoom) {
       const checkClass = await checkSchoolClassStatus(homeRoomClassId)
       if (!checkClass) return response.res200(res, "001", `Kelas belum terdaftar dalam sistem.`)
 
@@ -48,14 +48,14 @@ exports.insertEnrollmentTeacher = async (req, res, next) => {
 
       await insertEnrollmentTeacher({ 
         teacherId,
-        teacherName: checkTeacher.name,
+        teacherName: checkTeacher.fullname,
         academicYearId,
         academicYear: checkAcademicYear.academicYear,
         classId: homeRoomClassId,
         className: checkClass.name,
         teacherType: "HOMEROOM",
       })
-      return response.res200(res, "000", `Sukses mendaftarkan wali kelas ${checkClass.name} ke tahun ajaran ${checkAcademicYear.name}`)
+      return response.res200(res, "000", `Sukses mendaftarkan wali kelas ${checkClass.name} ke tahun ajaran ${checkAcademicYear.academicYear}`)
     }
 
     const checkCourse = await checkCourseStatus(courseId)
@@ -70,7 +70,7 @@ exports.insertEnrollmentTeacher = async (req, res, next) => {
 
       await insertEnrollmentTeacher({ 
         teacherId,
-        teacherName: checkTeacher.name,
+        teacherName: checkTeacher.fullname,
         academicYearId,
         academicYear: checkAcademicYear.academicYear,
         classId,
@@ -81,7 +81,7 @@ exports.insertEnrollmentTeacher = async (req, res, next) => {
       })
     }
 
-    return response.res200(res, "000", `Sukses mendaftarkan guru ke tahun ajaran ${checkAcademicYear.name}`)
+    return response.res200(res, "000", `Sukses mendaftarkan guru ke tahun ajaran ${checkAcademicYear.academicYear}`)
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Register Gagal. Mohon cek kembali data pendaftaran guru yang dibuat.")

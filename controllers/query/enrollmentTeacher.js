@@ -43,7 +43,7 @@ exports.insertEnrollmentTeacher = async ({
   courseName,
   teacherType,
 }) => {
-  return enrollment_student.create({
+  return enrollment_teacher.create({
     id: nanoid(36),
     teacherId,
     teacherName,
@@ -66,7 +66,7 @@ exports.updateClassOrAcademicYearEnrollmentStudent = async ({
   academicYearId,
   academicYear,
 }) => {
-  return enrollment_student.update(
+  return enrollment_teacher.update(
     {
       classId,
       className,

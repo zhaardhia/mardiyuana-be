@@ -12,8 +12,7 @@ exports.checkCourseStatus = async (id) => {
   return course.findOne({
     raw: true,
     where: {
-      id,
-      status: "ACTIVE"
+      id
     }
   })
 }

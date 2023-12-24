@@ -47,7 +47,7 @@ exports.insertUpdateEnrollmentStudent = async (req, res, next) => {
         academicYear: checkAcademicYear.academicYear,
       })
       
-      return response.res200(res, "000", `Sukses mengubah data siswa ke tahun ajaran ${checkAcademicYear.name}`)
+      return response.res200(res, "000", `Sukses mengubah data siswa ke tahun ajaran ${checkAcademicYear.academicYear}`)
     }
 
     await insertEnrollmentStudent({ 
@@ -58,7 +58,7 @@ exports.insertUpdateEnrollmentStudent = async (req, res, next) => {
       academicYear: checkAcademicYear.academicYear
     })
     
-    return response.res200(res, "000", `Sukses mendaftarkan siswa ke tahun ajaran ${checkAcademicYear.name}`)
+    return response.res200(res, "000", `Sukses mendaftarkan siswa ke tahun ajaran ${checkAcademicYear.academicYear}`)
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Register Gagal. Mohon cek kembali data pendaftaran siswa yang dibuat.")
