@@ -18,6 +18,8 @@ router.use("/enrollment-student", require("./enrollment-student"))
 router.use("/enrollment-teacher", require("./enrollment-teacher"))
 router.use("/curriculum", require("./curriculum"));
 router.use("/course", require("./course"));
+router.use("/course-section", require("./course-section"));
+router.use("/course-module", require("./course-module"));
 
 router.all('*', index);
 

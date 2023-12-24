@@ -13,3 +13,20 @@ module.exports.INSERT_ENROLLMENT_TEACHER = {
   isHomeRoom : { type: "boolean", min: 30, max: 40, optional: true },
   homeRoomClassId: { type: "string", min: 30, max: 40, optional: true },
 };
+
+module.exports.INSERT_COURSE_SECTION = {
+  id: { type: "string", min: 30, max: 40, optional: true }, 
+  courseId: { type: "string", min: 30, max: 40 }, 
+  numberSection: { type: 'number', positive: true, integer: true }, 
+  name: { type: "string", min: 10, max: 100 }
+}
+
+module.exports.INSERT_COURSE_MODULE = {
+  id: { type: "string", min: 30, max: 40, optional: true }, 
+  courseSectionId: { type: "string", min: 30, max: 40 }, 
+  courseId: { type: "string", min: 30, max: 40 }, 
+  numberModule: { type: 'number', positive: true, integer: true }, 
+  content: { type: "string", min: 5, max: 1000 },
+  url: { type: "string", min: 5, max: 255, optional: true },
+  isSupportedMaterial: { type: "boolean" }
+}

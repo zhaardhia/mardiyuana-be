@@ -28,6 +28,8 @@ const school_class = require("../models/school_class");
 const academic_year = require("../models/academic_year");
 const curriculum = require("../models/curriculum");
 const course = require("../models/course");
+const course_section = require("../models/course_section");
+const course_module = require("../models/course_module");
 
 module.exports = {
   admin: admin(db, DataTypes),
@@ -40,5 +42,7 @@ module.exports = {
   academic_year: academic_year(db, DataTypes),
   curriculum: curriculum(db, DataTypes),
   course: course(db, DataTypes),
+  course_section: course_section(db, DataTypes),
+  course_module: course_module(db, DataTypes),
   db,
 };
