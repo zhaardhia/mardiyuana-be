@@ -23,6 +23,7 @@ const teacher = require("../models/teacher");
 const parent = require("../models/parent");
 const student = require("../models/student");
 const enrollment_student = require("../models/enrollment_student");
+const enrollment_teacher = require("../models/enrollment_teacher");
 const school_class = require("../models/school_class");
 const academic_year = require("../models/academic_year");
 const curriculum = require("../models/curriculum");
@@ -34,6 +35,7 @@ module.exports = {
   parent: parent(db, DataTypes),
   student: student(db, DataTypes),
   enrollment_student: enrollment_student(db, DataTypes),
+  enrollment_teacher: enrollment_teacher(db, DataTypes),
   school_class: school_class(db, DataTypes),
   academic_year: academic_year(db, DataTypes),
   curriculum: curriculum(db, DataTypes),
