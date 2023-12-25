@@ -13,6 +13,22 @@ const index = function (req, res, next) {
   response.res404(res);
 };
 
+router.route("/login")
+  .post((req, res, next) => {
+    adminController.login(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/refresh-token")
+  .get((req, res, next) => {
+    adminController.refreshToken(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 router.route("/create-admin")
   .post((req, res, next) => {
     adminController.registerAdmin(req, res).catch((error) => {

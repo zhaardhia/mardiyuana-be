@@ -9,6 +9,18 @@ module.exports = function(sequelize, DataTypes) {
     academicYear: {
       type: DataTypes.STRING(100),
       allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('ACTIVE','INACTIVE'),
+      allowNull: false
+    },
+    createdDate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    updatedDate: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,

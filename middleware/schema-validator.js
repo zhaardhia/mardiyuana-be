@@ -30,3 +30,11 @@ module.exports.INSERT_COURSE_MODULE = {
   url: { type: "string", min: 5, max: 255, optional: true },
   isSupportedMaterial: { type: "boolean" }
 }
+
+// STUDENT
+module.exports.GET_LIST_STUDENT_TABLE_ADMIN = {
+  page: { type: 'number', positive: true, integer: true },
+  pageSize: { type: 'number', positive: true, integer: true },
+  studentName: { type: "string", min: 0, optional: true }, 
+  filterBy: { type: "string", min: 0, optional: true }, 
+}

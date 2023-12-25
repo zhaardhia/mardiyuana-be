@@ -20,6 +20,7 @@ router.use("/curriculum", require("./curriculum"));
 router.use("/course", require("./course"));
 router.use("/course-section", require("./course-section"));
 router.use("/course-module", require("./course-module"));
+router.use("/admin-student", require("./admin-student"));
 
 router.all('*', index);
 

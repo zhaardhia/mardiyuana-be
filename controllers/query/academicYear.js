@@ -17,3 +17,12 @@ exports.checkAcademicYearIsRegistered = async (academicYearId) => {
     }
   })
 }
+
+exports.checkAcademicYearThatActive = async () => {
+  return academic_year.findOne({
+    raw: true,
+    where: {
+      status: "ACTIVE"
+    }
+  })
+}
