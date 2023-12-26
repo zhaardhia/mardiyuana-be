@@ -13,6 +13,15 @@ exports.getCurriculumDetail = async (id) => {
     raw: true,
     where: {
       id
-    }
+    },
+  })
+}
+
+exports.getCurriculumActive = async () => {
+  return curriculum.findOne({
+    raw: true,
+    where: {
+      status: "ACTIVE"
+    },
   })
 }
