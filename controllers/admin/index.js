@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken")
 const { validationEmail } = require("../../middleware/validator")
 const { validatePayloadCreateStudentParent } = require("./utils")
 const { getOperatorByUsername, updateRefreshToken, getRefreshToken } = require("../query/admin")
+const { checkAcademicYearThatActive } = require("../query/academicYear")
 const bcrypt = require("bcryptjs")
 const moment = require("moment")
 
@@ -75,6 +76,7 @@ exports.registerParent = async (req, res, next) => {
   const checkStudent = await validatePayloadCreateStudentParent(res, studentPayload, "student")
   if (!checkStudent) return checkStudent;
 
+  const checkAcademicYear = await checkAcademicYearThatActive()
   try {
     // username, fullname, name, email, phone, status, bornIn, bornAt, startAcademicYear
     const parentId = nanoid(36);
@@ -97,6 +99,7 @@ exports.registerParent = async (req, res, next) => {
       status: 'ACTIVE',
       password: hashPasswordParent,
       studentId,
+      startAcademicYear: checkAcademicYear.academicYear,
       createdDate: new Date(),
       updatedDate: new Date()
     }
@@ -108,6 +111,7 @@ exports.registerParent = async (req, res, next) => {
       status: 'ACTIVE',
       password: hashPasswordStudent,
       parentId,
+      startAcademicYear: checkAcademicYear.academicYear,
       createdDate: new Date(),
       updatedDate: new Date()
     }
