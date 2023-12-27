@@ -14,7 +14,8 @@ const {
   getListStudentAdminEnrolled,
   getListStudentAdminNotEnrolled,
   getListStudentAdminByStatus,
-  totalCountListStudentAdminByStatus
+  totalCountListStudentAdminByStatus,
+  getDetailStudentAdminEnrolled
 } = require("../query/student")
 const { 
   checkAcademicYearThatActive
@@ -110,6 +111,21 @@ exports.listTableStudentAdmin = async (req, res, next) => {
     }
     // console.log({totalCount, totalPages})
     return response.res200(res, "000", "Sukses mendapatkan data murid.", responseData)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Data gagal didapatkan. Mohon cek kembali request yang dibuat.")
+  }
+}
+
+exports.getDetailStudentAdmin = async (req, res, next) => {
+  const { id } = req.query
+  if (!id) return response.res400(res, "id is required.")
+
+  try {
+    const detailStudent = await getDetailStudentAdminEnrolled(id)
+    if (!detailStudent) return response.res200(res, "001", "Data murid tidak tersedia")
+    console.log({detailStudent})
+    return response.res200(res, "000", "Sukses mendapatkan detail data murid", detailStudent)
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Data gagal didapatkan. Mohon cek kembali request yang dibuat.")

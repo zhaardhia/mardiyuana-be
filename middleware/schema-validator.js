@@ -3,6 +3,7 @@ module.exports.INSERT_ENROLLMENT_STUDENT = {
   studentId: { type: "string", min: 30, max: 40 },
   classId: { type: "string", min: 30, max: 40 },
   academicYearId: { type: "string", min: 30, max: 40 },
+  status: { type: "string", optional: true }
 };
 
 module.exports.INSERT_ENROLLMENT_TEACHER = {
@@ -36,5 +37,13 @@ module.exports.GET_LIST_STUDENT_TABLE_ADMIN = {
   page: { type: 'number', positive: true, integer: true },
   pageSize: { type: 'number', positive: true, integer: true },
   studentName: { type: "string", min: 0, optional: true }, 
+  filterBy: { type: "string", min: 0, optional: true }, 
+}
+
+// TEACHER
+module.exports.GET_LIST_TEACHER_TABLE_ADMIN = {
+  page: { type: 'number', positive: true, integer: true },
+  pageSize: { type: 'number', positive: true, integer: true },
+  teacherName: { type: "string", min: 0, optional: true }, 
   filterBy: { type: "string", min: 0, optional: true }, 
 }

@@ -44,6 +44,7 @@ exports.updateClassOrAcademicYearEnrollmentStudent = async ({
   className,
   academicYearId,
   academicYear,
+  status
 }) => {
   return enrollment_student.update(
     {
@@ -51,6 +52,7 @@ exports.updateClassOrAcademicYearEnrollmentStudent = async ({
       className,
       academicYearId,
       academicYear,
+      ...(status && { status }),
       updatedDate: new Date()
     }, 
     {
@@ -59,4 +61,19 @@ exports.updateClassOrAcademicYearEnrollmentStudent = async ({
       }
     }
   )
+}
+
+exports.getLastEnrollmentStudentGraduate = async ({
+  studentId
+}) => {
+  return enrollment_student.findOne({
+    raw: true,
+    order: [['createdDate', 'DESC']],
+    where: {
+      status: {
+        [Op.in]: ["GRADUATED", "ACTIVE"]
+      },
+      studentId
+    }
+  })
 }

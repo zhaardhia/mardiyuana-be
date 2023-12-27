@@ -8,6 +8,17 @@ const {
   student, parent, enrollment_student
 } = require("../../components/database");
 
+exports.checkExistingStudent = async (id) => {
+  return student.findOne({
+    raw: true,
+    where: {
+      id,
+      status: "ACTIVE"
+    },
+    attributes: ["id"]
+  })
+}
+
 exports.totalCountListStudentAdmin = async (academicYearId, studentName) => {
   const parentAssociate = student.hasOne(parent, {foreignKey: "id", sourceKey: "parentId"})
   const enrollmentStudentAssociate = student.hasOne(enrollment_student, {foreignKey: "studentId", sourceKey: "id"})
@@ -179,6 +190,35 @@ exports.totalCountListStudentAdminByStatus = async (status, studentName) => {
           [Op.iLike]: `%${studentName}%`, // Case-insensitive search for name
         },
       })  
+    }
+  })
+}
+
+exports.getDetailStudentAdminEnrolled = async (id) => {
+  const parentAssociate = student.hasOne(parent, {foreignKey: "id", sourceKey: "parentId"})
+  const enrollmentStudentAssociate = student.hasMany(enrollment_student, {foreignKey: "studentId", sourceKey: "id"})
+  return student.findOne({
+    // raw: true,
+    include: [
+      {
+        association: parentAssociate,
+        attributes: ["id", "fullname", "name", "email", "phone", "bornIn", "bornAt", "createdDate"],
+        // required: true,
+      },
+      {
+        association: enrollmentStudentAssociate,
+        attributes: ["id", "className", "academicYear", "academicYearId", "status"],
+        // where: {
+        //   // Additional conditions for the parent association
+        //   // academicYearId,
+        //   // status: "ACTIVE"
+        // },
+        // required: true,
+      },
+    ],
+    attributes: ["id", "fullname", "name", "email", "phone", "status", "createdDate", "bornIn", "bornAt", "startAcademicYear", "endAcademicYear"],
+    where: {
+      id
     }
   })
 }

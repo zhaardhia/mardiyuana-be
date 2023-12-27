@@ -21,6 +21,13 @@ router.route("/insert-update-enrollment-student")
     });
   })
 
+router.route("/initial-data")
+  .get((req, res, next) => {
+    enrollmentStudentController.getSupportedDataToInsertEnrollStudent(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  });
 
 router.all("*", index);
 

@@ -23,6 +23,7 @@ exports.checkAcademicYearThatActive = async () => {
     raw: true,
     where: {
       status: "ACTIVE"
-    }
+    },
+    attributes: ["id", "academicYear"]
   })
 }

@@ -18,3 +18,38 @@ exports.checkTeacherFullname = async (id) => {
     attributes: ["id", "fullname"]
   })
 }
+
+exports.getListTeacherAdminByStatus = async (page, pageSize, teacherName, status) => {
+  return teacher.findAll({
+    limit: pageSize + 1,
+    offset: (page - 1) * pageSize,
+    order: [['createdDate', 'DESC']],
+    raw: true,
+    attributes: ["id", "fullname", "name", "username", "email", "phone", "status", "bornIn", "bornAt", "createdDate"],
+    where: {
+      ...(status && {
+        status
+      }),
+      ...(teacherName && {
+        fullname: {
+          [Op.like]: `%${teacherName}%`, // Case-insensitive search for name
+        },
+      })  
+    }
+  })
+}
+
+exports.totalCountListTeacherAdminByStatus = async (status, teacherName) => {
+  return teacher.count({
+    where: {
+      ...(status && {
+        status
+      }),
+      ...(teacherName && {
+        fullname: {
+          [Op.like]: `%${teacherName}%`, // Case-insensitive search for name
+        },
+      })  
+    }
+  })
+}
