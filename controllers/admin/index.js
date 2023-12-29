@@ -65,7 +65,6 @@ exports.registerAdmin = async (req, res, next) => {
 
 exports.registerParent = async (req, res, next) => {
   const { parent: parentPayload, student: studentPayload } = req.body
-  const dbTransaction = await db.transaction();
 
   if (!parentPayload) return response.res400(res, "parent object is empty.")
   if (!studentPayload) return response.res400(res, "student object is empty.")
@@ -76,6 +75,7 @@ exports.registerParent = async (req, res, next) => {
   const checkStudent = await validatePayloadCreateStudentParent(res, studentPayload, "student")
   if (!checkStudent) return checkStudent;
 
+  const dbTransaction = await db.transaction();
   const checkAcademicYear = await checkAcademicYearThatActive()
   try {
     // username, fullname, name, email, phone, status, bornIn, bornAt, startAcademicYear
@@ -140,7 +140,7 @@ exports.registerTeacher = async (req, res, next) => {
   if (!bornIn) return response.res400(res, "Password wajib diisi.")
   if (!bornAt) return response.res400(res, "Password wajib diisi.")
 
-  const checkEmail = await admin.findOne({
+  const checkEmail = await teacher.findOne({
     raw:true,
     where: {
       email
@@ -148,7 +148,7 @@ exports.registerTeacher = async (req, res, next) => {
   });
   if (checkEmail) return response.res400(res, "Email sudah terdaftar");
 
-  const checkUsername = await admin.findOne({
+  const checkUsername = await teacher.findOne({
     raw:true,
     where: {
       username
@@ -238,12 +238,9 @@ exports.login = async (req, res, next) => {
 exports.refreshToken = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken, req.cookies)
-    console.log("WKKW")
     if (!refreshToken) return response.res401(res)
-    console.log("WKKW2")
+
     const user = await getRefreshToken(refreshToken);
-    console.log(user)
     if (!user[0]) return response.res401(res);
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, decoded) => {

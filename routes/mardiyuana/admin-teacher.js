@@ -22,6 +22,22 @@ router.route("/list-teacher-table")
     });
   })
 
+router.route("/edit-teacher")
+  .put((req, res, next) => {
+    teacherController.editTeacher(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/detail-teacher")
+  .get((req, res, next) => {
+    teacherController.getDetailTeacherAdmin(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 router.all("*", index);
 
 module.exports = router;

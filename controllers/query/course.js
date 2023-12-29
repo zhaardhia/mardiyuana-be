@@ -8,11 +8,12 @@ const {
   course
 } = require("../../components/database");
 
-exports.checkCourseStatus = async (id) => {
+exports.checkCourseStatus = async (courseIdentifier, grade) => {
   return course.findOne({
     raw: true,
     where: {
-      id
+      courseIdentifier,
+      grade: Number(grade)
     }
   })
 }

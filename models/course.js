@@ -10,6 +10,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: false
     },
+    courseIdentifier: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    grade: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     curriculumId: {
       type: DataTypes.STRING(36),
       allowNull: true

@@ -22,9 +22,11 @@ exports.getAllClassWithGrade = async (grade) => {
   return school_class.findAll({
     raw: true,
     where: {
-      name: {
-        [Op.like]: `${grade}%`, // Case-insensitive search for name
-      },
+      ...(grade && {
+        name: {
+          [Op.like]: `${grade}%`, // Case-insensitive search for name
+        },
+      }),
       status: "ACTIVE"
     },
     attributes: ["id", "name"]

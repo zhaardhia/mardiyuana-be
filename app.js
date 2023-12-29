@@ -14,7 +14,7 @@ const corsOptions = {
   credentials: true, //included credentials as true
 };
 // app.use(cors(corsOptions))
-app.use(cors({ credentials: true, origin: 'http://localhost:3001' }))
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
 
 morganBody(app);
 app.use((error, req, res, next) => {

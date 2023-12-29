@@ -1,7 +1,7 @@
 "use strict";
 
 const response = require("../../components/response")
-const { db, student } = require("../../components/database");
+const { db, student, parent } = require("../../components/database");
 const { nanoid } = require("nanoid");
 const jwt = require("jsonwebtoken")
 const { validationEmail } = require("../../middleware/validator")
@@ -20,6 +20,44 @@ const {
 const { 
   checkAcademicYearThatActive
 } = require("../query/academicYear")
+const { validatePayloadCreateStudentParent } = require("../admin/utils")
+
+exports.editStudentAndParent = async (req, res, next) => {
+  const { parent: parentPayload, student: studentPayload } = req.body
+
+  if (!parentPayload) return response.res400(res, "parent object is empty.")
+  if (!studentPayload) return response.res400(res, "student object is empty.")
+  if (!parentPayload.id) return response.res400(res, "parent id is empty.")
+  if (!studentPayload.id) return response.res400(res, "student id is empty.")
+
+  const checkParent = await validatePayloadCreateStudentParent(res, parentPayload, "parent", true)
+  if (!checkParent) return checkParent;
+  console.log({checkParent})
+  const checkStudent = await validatePayloadCreateStudentParent(res, studentPayload, "student", true)
+  if (!checkStudent) return checkStudent;
+
+  try {
+    // username, fullname, name, email, phone, status, bornIn, bornAt, startAcademicYear
+
+    const payloadParent = {
+      ...parentPayload,
+      updatedDate: new Date()
+    }
+
+    const payloadStudent = {
+      ...studentPayload,
+      updatedDate: new Date()
+    }
+    console.log({payloadParent, payloadStudent})
+    await parent.update(payloadParent, { where: { id: parentPayload.id } });
+    await student.update(payloadStudent, { where: { id: studentPayload.id } });
+
+    return response.res200(res, "000", "Sukses mengubah akun orang tua murid beserta muridnya.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Update Gagal. Mohon cek kembali data orang tua atau murid yang dibuat.")
+  }
+}
 
 exports.listTableStudentAdmin = async (req, res, next) => {
   const payload = {

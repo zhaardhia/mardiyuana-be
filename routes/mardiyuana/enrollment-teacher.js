@@ -21,7 +21,20 @@ router.route("/insert-enrollment-teacher")
     });
   })
 
-
+router.route("/enrolled-teacher-by-academic-year")
+  .get((req, res, next) => {
+    enrollmentTeacherController.getEnrolledTeacherByAcademicYear(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+router.route("/initial-data-enroll-teacher")
+  .get((req, res, next) => {
+    enrollmentTeacherController.initialDataEnrollmentTeacher(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 router.all("*", index);
 
 module.exports = router;

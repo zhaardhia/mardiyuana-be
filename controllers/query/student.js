@@ -65,7 +65,7 @@ exports.getListStudentAdminEnrolled = async (page, pageSize, studentName, academ
     include: [
       {
         association: parentAssociate,
-        attributes: ["id", "fullname", "phone"],
+        attributes: ["id", "fullname", "name", "email", "username", "bornIn", "bornAt", "phone"],
         // required: true,
       },
       {
@@ -79,7 +79,7 @@ exports.getListStudentAdminEnrolled = async (page, pageSize, studentName, academ
         // required: true,
       },
     ],
-    attributes: ["id", "fullname", "createdDate", "bornIn", "bornAt"],
+    attributes: ["id", "fullname", "name", "email", "username", "createdDate", "bornIn", "bornAt", "phone"],
     where: {
       status: "ACTIVE",
       ...(studentName && {

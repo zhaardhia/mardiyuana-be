@@ -7,9 +7,9 @@ const roleObj = {
   student: "murid"
 }
 
-exports.validatePayloadCreateStudentParent = async (res, payload, role) => {
+exports.validatePayloadCreateStudentParent = async (res, payload, role, isEdit = false) => {
   const { 
-    username, fullname, name, email, bornIn, bornAt, startAcademicYear
+    username, fullname, name, email, bornIn, bornAt
   } = payload
   console.log({role})
   // check username
@@ -31,7 +31,7 @@ exports.validatePayloadCreateStudentParent = async (res, payload, role) => {
       }
     });
   }
-  if (checkUsername) return response.res400(res, `Email ${roleObj[role]} sudah terdaftar`);
+  if (checkUsername && isEdit === false) return response.res400(res, `Username ${roleObj[role]} sudah terdaftar`);
 
 
   // check fullname
@@ -58,7 +58,7 @@ exports.validatePayloadCreateStudentParent = async (res, payload, role) => {
       }
     });
   }
-  if (checkEmail) return response.res400(res, `Email ${roleObj[role]} sudah terdaftar`);
+  if (checkEmail && isEdit === false) return response.res400(res, `Email ${roleObj[role]} sudah terdaftar`);
 
   // check bornIn
   if (!bornIn || !isString(bornIn) || bornIn.length < 3) return response.res400(res, `Tempat lahir ${roleObj[role]} wajib diisi.`)

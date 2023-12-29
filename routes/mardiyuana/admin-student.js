@@ -28,6 +28,13 @@ router.route("/detail-student")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
+router.route("/edit-student-parent")
+  .put((req, res, next) => {
+    studentController.editStudentAndParent(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 router.all("*", index);
 
 module.exports = router;

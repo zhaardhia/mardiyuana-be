@@ -8,9 +8,8 @@ module.exports.INSERT_ENROLLMENT_STUDENT = {
 
 module.exports.INSERT_ENROLLMENT_TEACHER = {
   teacherId: { type: "string", min: 30, max: 40 },
-  academicYearId: { type: "string", min: 30, max: 40 },
-  classIds: { type: 'array', items: 'string', optional: true },
-  courseId: { type: "string", min: 30, max: 40, optional: true },
+  classId: { type: 'string', min: 30, max: 40, optional: true },
+  courseValue: { type: "string", min: 3, max: 40, optional: true },
   isHomeRoom : { type: "boolean", min: 30, max: 40, optional: true },
   homeRoomClassId: { type: "string", min: 30, max: 40, optional: true },
 };

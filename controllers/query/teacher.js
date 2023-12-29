@@ -53,3 +53,13 @@ exports.totalCountListTeacherAdminByStatus = async (status, teacherName) => {
     }
   })
 }
+
+exports.getDetailTeacherAdmin = async (id) => {
+  return teacher.findOne({
+    raw: true,
+    attributes: ["id", "fullname", "name", "email", "phone", "status", "createdDate", "bornIn", "bornAt", "startAt", "endAt"],
+    where: {
+      id
+    }
+  })
+}
