@@ -20,12 +20,12 @@ router.route("/")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-  // .get((req, res, next) => {
-  //   curriculumController.getAllCurriculum(req, res).catch((error) => {
-  //     console.error(error);
-  //     return response.res500(res, "Internal system error, please try again later!");
-  //   });
-  // })
+  .get((req, res, next) => {
+    courseController.getAllCourse(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 
 router.all("*", index);
