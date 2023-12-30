@@ -8,11 +8,26 @@ const {
   course_module
 } = require("../../components/database");
 
-exports.checkCourseModuleNumberModule = async (number) => {
+exports.checkCourseModuleNumberModule = async (courseSectionId, number, typeModule) => {
   return course_module.findOne({
     raw: true,
     where: {
-      numberModule: number
+      courseSectionId,
+      numberModule: number,
+      type: typeModule
     }
+  })
+}
+
+exports.getAllCourseModuleByCourseSectionId = async (id, type) => {
+  return course_module.findAll({
+    raw: true,
+    where: {
+      courseSectionId: id,
+      ...(type && {
+        type
+      })
+    },
+    order: [['numberModule', 'ASC']]
   })
 }

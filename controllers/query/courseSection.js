@@ -8,10 +8,11 @@ const {
   course_section
 } = require("../../components/database");
 
-exports.checkCourseSectionNumberSection = async (number) => {
+exports.checkCourseSectionNumberSection = async (courseId, number) => {
   return course_section.findOne({
     raw: true,
     where: {
+      courseId,
       numberSection: number
     }
   })
@@ -23,5 +24,15 @@ exports.checkCourseSectionAvail = async (id) => {
     where: {
       id
     }
+  })
+}
+
+exports.getAllCourseSectionById = async (courseId) => {
+  return course_section.findAll({
+    raw: true,
+    where: {
+      courseId
+    },
+    order: [['numberSection', 'ASC']]
   })
 }

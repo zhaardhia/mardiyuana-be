@@ -17,15 +17,16 @@ module.exports.INSERT_ENROLLMENT_TEACHER = {
 module.exports.INSERT_COURSE_SECTION = {
   id: { type: "string", min: 30, max: 40, optional: true }, 
   courseId: { type: "string", min: 30, max: 40 }, 
-  numberSection: { type: 'number', positive: true, integer: true }, 
-  name: { type: "string", min: 10, max: 100 }
+  numberSection: { type: 'number', integer: true, optional: true }, 
+  name: { type: "string", min: 10, max: 100 },
+  description: { type: "string", min: 10, max: 500 }
 }
 
 module.exports.INSERT_COURSE_MODULE = {
   id: { type: "string", min: 30, max: 40, optional: true }, 
   courseSectionId: { type: "string", min: 30, max: 40 }, 
   courseId: { type: "string", min: 30, max: 40 }, 
-  numberModule: { type: 'number', positive: true, integer: true }, 
+  numberModule: { type: 'number', integer: true, optional: true }, 
   content: { type: "string", min: 5, max: 1000 },
   url: { type: "string", min: 5, max: 255, optional: true },
   isSupportedMaterial: { type: "boolean" }

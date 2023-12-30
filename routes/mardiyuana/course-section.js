@@ -20,13 +20,22 @@ router.route("/insert-update-course-section")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
-  // .get((req, res, next) => {
-  //   curriculumController.getAllCurriculum(req, res).catch((error) => {
-  //     console.error(error);
-  //     return response.res500(res, "Internal system error, please try again later!");
-  //   });
-  // })
 
+router.route("/get-by-id")
+  .get((req, res, next) => {
+    courseSectionController.getAllCourseSectionByCourseId(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/reorder-section")
+  .put((req, res, next) => {
+    courseSectionController.reorderCourseSections(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.all("*", index);
 
