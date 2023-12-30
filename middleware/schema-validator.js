@@ -47,3 +47,12 @@ module.exports.GET_LIST_TEACHER_TABLE_ADMIN = {
   teacherName: { type: "string", min: 0, optional: true }, 
   filterBy: { type: "string", min: 0, optional: true }, 
 }
+
+// EVENT
+module.exports.INSERT_UPDATE_EVENT = {
+  id: { type: "string", min: 30, max: 40, optional: true }, 
+  name: { type: "string", min: 5, max: 100 }, 
+  description: { type: "string", min: 10 }, 
+  needVote: { type: "string", min: 2, max: 20 }, 
+  imageUrl: { type: "string", min: 5, max: 100, optional: true }, 
+}

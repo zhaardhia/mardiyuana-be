@@ -30,6 +30,7 @@ const curriculum = require("../models/curriculum");
 const course = require("../models/course");
 const course_section = require("../models/course_section");
 const course_module = require("../models/course_module");
+const event = require("../models/event");
 
 module.exports = {
   admin: admin(db, DataTypes),
@@ -44,5 +45,6 @@ module.exports = {
   course: course(db, DataTypes),
   course_section: course_section(db, DataTypes),
   course_module: course_module(db, DataTypes),
+  event: event(db, DataTypes),
   db,
 };

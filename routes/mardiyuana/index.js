@@ -22,6 +22,7 @@ router.use("/course-section", require("./course-section"));
 router.use("/course-module", require("./course-module"));
 router.use("/admin-student", require("./admin-student"));
 router.use("/admin-teacher", require("./admin-teacher"));
+router.use("/event", require("./event"));
 
 router.all('*', index);
 
