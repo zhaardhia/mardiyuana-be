@@ -56,3 +56,10 @@ module.exports.INSERT_UPDATE_EVENT = {
   needVote: { type: "string", min: 2, max: 20 }, 
   imageUrl: { type: "string", min: 5, max: 100, optional: true }, 
 }
+
+// EVENT
+module.exports.INSERT_UPDATE_ANNOUNCEMENT = {
+  id: { type: "string", min: 30, max: 40, optional: true }, 
+  title: { type: "string", min: 5, max: 100 }, 
+  body: { type: "string", min: 10 }, 
+}

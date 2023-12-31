@@ -23,6 +23,8 @@ router.use("/course-module", require("./course-module"));
 router.use("/admin-student", require("./admin-student"));
 router.use("/admin-teacher", require("./admin-teacher"));
 router.use("/event", require("./event"));
+router.use("/announcement", require("./announcement"));
+router.use("/academic-year", require("./academic-year"));
 
 router.all('*', index);
 
