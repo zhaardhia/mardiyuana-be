@@ -77,3 +77,20 @@ exports.getLastEnrollmentStudentGraduate = async ({
     }
   })
 }
+
+
+// Student Side
+exports.getAllEnrollmentStudentByStudentId = async ({
+  studentId,
+}) => {
+  console.log({studentId})
+  return enrollment_student.findAll({
+    raw: true,
+    where: {
+      studentId,
+      status: {
+        [Op.in]: ["GRADUATED", "ACTIVE"]
+      },
+    }
+  })
+}

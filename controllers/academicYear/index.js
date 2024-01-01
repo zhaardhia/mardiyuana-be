@@ -4,6 +4,7 @@ const moment = require("moment");
 const { isString } = require("../../middleware/validator");
 const { nanoid } = require("nanoid");
 const { checkAcademicYearThatActive, checkAcademicYearIsRegistered } = require("../query/academicYear")
+const { getCurriculumActive } = require("../query/curriculum")
 
 exports.insertUpdateAcademicYear = async (req, res, next) => {
   const { id, academicYear } = req.body
@@ -11,11 +12,14 @@ exports.insertUpdateAcademicYear = async (req, res, next) => {
 
   try {
     const checkActiveAcademicYear = await checkAcademicYearThatActive()
+    const getCurriculum = await getCurriculumActive()
     if (!id) {
       const idCreated = nanoid(36)
       await academicYear.create({
         id: idCreated,
         academicYear,
+        curriculumId: getCurriculum.id,
+        curriculumName: getCurriculum.name,
         status: checkActiveAcademicYear ? "INACTIVE" : "ACTIVE",
         createdDate: new Date(),
         updatedDate: new Date()
@@ -68,7 +72,7 @@ exports.activateAcademicYear = async (req, res, next) => {
 exports.getAllAcademicYear = async (req, res, next) => {
   const getAllAcademicYearData = await academic_year.findAll({
     raw: true,
-    attributes: ["id", "academicYear", "status"]
+    attributes: ["id", "academicYear", "status", "curriculumId", "curriculumName"]
   })
   return response.res200(res, "000", "success get all academic year data.", getAllAcademicYearData || []);
 }

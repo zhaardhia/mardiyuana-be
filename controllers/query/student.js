@@ -222,3 +222,37 @@ exports.getDetailStudentAdminEnrolled = async (id) => {
     }
   })
 }
+
+
+// Student Side
+
+exports.getStudentByUsername = async (username) => {
+  return student.findOne({
+    raw:true,
+    where: {
+      username
+    }
+  })
+}
+
+exports.updateStudentRefreshToken = async (userId, refresh_token) => {
+  return student.update(
+    {
+      refresh_token
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
+exports.getStudentRefreshToken = async (refresh_token) => {
+  return student.findAll({
+    raw: true,
+    where: {
+      refresh_token
+    }
+  })
+}

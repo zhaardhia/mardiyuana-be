@@ -6,6 +6,9 @@ const { nanoid } = require("nanoid");
 const { getCurriculumDetail, getCurriculumActive } = require("../query/curriculum")
 const { courseConstant } = require("../utils/data")
 const { checkCourseStatus, getAllCourse } = require("../query/course")
+const { getAllEnrollmentStudentByStudentId } = require("../query/enrollmentStudent")
+const { checkAcademicYearIsRegistered } = require("../query/academicYear")
+const { getAllCourseByCurriculumIdAndGrade } = require("../query/course")
 
 exports.insertUpdateCourse = async (req, res, next) => {
   const { id, courseIdentifier, grade, curriculumId } = req.body
@@ -65,6 +68,37 @@ exports.getAllCourse = async (req, res, next) => {
     if (allCourse.length < 1) return response.res200(res, "001", "Belum ada daftar pelajaran pada kurikulum yang aktif")
 
     return response.res200(res, "000", "Sukses mendapatkan data semua pelajaran pada kurikulum aktif", allCourse)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+
+// STUDENT SIDE
+
+exports.getListCourseStudent = async (req, res, next) => {
+  const { user } = req
+  const { academicYearId } = req.query
+
+  if (!user) return response.res400(res, "user is not logged in.")
+  console.log({user})
+  try {
+    const getAllEnrollmentStudent = await getAllEnrollmentStudentByStudentId({ studentId: user.userId })
+    if (getAllEnrollmentStudent.length < 1) return response.res200(res, "001", "Murid belum didaftarkan ke tahun ajaran.")
+
+    const mapCourse = await Promise.all(
+      getAllEnrollmentStudent.map(async (enrollment) => {
+        const academicYearStudent = await checkAcademicYearIsRegistered(enrollment.academicYearId);
+        const allCourse = await getAllCourseByCurriculumIdAndGrade({ curriculumId: academicYearStudent.curriculumId, grade: Number(enrollment.className.charAt(0)) })
+        return {
+          ...allCourse,
+          ...enrollment
+        }
+      })
+    );
+
+    return response.res200(res, "000", "Sukses mendapatkan data pelajaran murid.", mapCourse)
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Interaksi gagal.")

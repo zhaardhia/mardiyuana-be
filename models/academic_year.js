@@ -14,6 +14,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('ACTIVE','INACTIVE'),
       allowNull: false
     },
+    curriculumId: {
+      type: DataTypes.STRING(36),
+      allowNull: false
+    },
+    curriculumName: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
     createdDate: {
       type: DataTypes.DATE,
       allowNull: true

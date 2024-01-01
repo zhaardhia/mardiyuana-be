@@ -15,12 +15,16 @@ const {
   getListStudentAdminNotEnrolled,
   getListStudentAdminByStatus,
   totalCountListStudentAdminByStatus,
-  getDetailStudentAdminEnrolled
+  getDetailStudentAdminEnrolled,
+  updateStudentRefreshToken,
+  getStudentRefreshToken,
+  getStudentByUsername
 } = require("../query/student")
 const { 
   checkAcademicYearThatActive
 } = require("../query/academicYear")
 const { validatePayloadCreateStudentParent } = require("../admin/utils")
+const bcrypt = require("bcryptjs")
 
 exports.editStudentAndParent = async (req, res, next) => {
   const { parent: parentPayload, student: studentPayload } = req.body
@@ -167,5 +171,80 @@ exports.getDetailStudentAdmin = async (req, res, next) => {
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Data gagal didapatkan. Mohon cek kembali request yang dibuat.")
+  }
+}
+
+
+// Student Side
+
+exports.login = async (req, res, next) => {
+  const payload = {
+    username: req.body.username,
+    password: req.body.password
+  }
+
+  if (!payload.username) return response.res400(res, "Username harus diisi.")
+  if (!payload.password) return response.res400(res, "Password harus diisi.")
+  
+  const user = await getStudentByUsername(payload.username);
+  if (!user) return response.res400(res, "Akun tidak ditemukan.");
+
+  const match = await bcrypt.compare(payload.password, user.password)
+  if (!match) return response.res400(res, "Password salah.")
+
+  const userId = user.id
+  const name = user.fullname
+  const email = user.email
+  const username = user.username
+
+  const accessToken = jwt.sign({ userId, name, username }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '20s'
+  })
+
+  const refreshToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '1d'
+  })
+  console.log({ refreshToken })
+  try {
+    await updateStudentRefreshToken(userId, refreshToken)
+  } catch (error) {
+    console.error(error)
+    return response.res400(res, "failed update token")
+  }
+
+  res.cookie('refreshToken', refreshToken, {
+    // httpOnly: true,
+    maxAge: 24 * 60 * 60 * 10,
+    // domain: 'https://mertapada-investor-frontend2.vercel.app',
+    // secure: true, // Use for HTTPS only
+    // httpOnly: true, // Ensure the cookie is not accessible via JavaScript
+    // sameSite: 'lax'
+    // secure: true,
+    // domain: "localhost",
+    // path: "/",
+    // sameSite: "None"
+  })
+  return response.res200(res, "000", "Login Berhasil.", { accessToken, refreshToken })
+}
+
+exports.refreshStudentToken = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) return response.res401(res)
+    console.log({refreshToken})
+    const user = await getStudentRefreshToken(refreshToken);
+    if (!user[0]) return response.res401(res);
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, decoded) => {
+      if (error) return response.res401(res)
+      const { id: userId, email, fullname: name } = user[0]
+      const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '15s'
+      })
+
+      return response.res200(res, "000", "Success generate token.", accessToken);
+    })
+  } catch (error) {
+    console.error(error)
   }
 }
