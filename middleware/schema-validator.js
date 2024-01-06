@@ -81,3 +81,19 @@ module.exports.INSERT_UPDATE_REMINDER_COURSE = {
   numberSection: { type: "number" }, 
   classId: { type: "string", min: 30, max: 40 }, 
 }
+
+// HOMEROOM TEACHER PAGE LIST STUDENT 
+module.exports.GET_LIST_STUDENT_TABLE_HOMEROOM_TEACHER = {
+  page: { type: 'number', positive: true, integer: true },
+  pageSize: { type: 'number', positive: true, integer: true },
+  studentName: { type: "string", min: 0, optional: true }, 
+}
+
+// INSERT UPDATE TEACHER'S NOTE
+module.exports.INSERT_UPDATE_TEACHER_NOTE = {
+  id: { type: "string", min: 30, max: 40, optional: true },
+  title: { type: "string", min: 5, max: 100 }, 
+  body: { type: "string", min: 10 }, 
+  studentId: { type: "string", min: 30, max: 40 },
+  classId: { type: "string", min: 30, max: 40 }, 
+}

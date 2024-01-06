@@ -256,3 +256,59 @@ exports.getStudentRefreshToken = async (refresh_token) => {
     }
   })
 }
+
+exports.getListStudentsInHomeroomPage = async ({ page, pageSize, studentName, academicYearId, classId }) => {
+  const studentAssociate = enrollment_student.hasOne(student, {foreignKey: "id", sourceKey: "studentId"})
+  return enrollment_student.findAll({
+    limit: pageSize + 1,
+    offset: (page - 1) * pageSize,
+    order: [['createdDate', 'DESC']],
+    // raw: true,
+    include: [
+      {
+        association: studentAssociate,
+        attributes: ["id", "email", "phone"],
+        where: {
+          // Additional conditions for the parent association
+          // academicYearId,
+          status: "ACTIVE"
+        },
+        // required: true,
+      },
+    ],
+    attributes: ["id", "studentId", "studentName", "classId"],
+    where: {
+      classId,
+      academicYearId,
+      ...(studentName && {
+        studentName: {
+          [Op.like]: `%${studentName}%`, // Case-insensitive search for name
+        },
+      })  
+    }
+  })
+}
+
+exports.totalCountListStudentInHomeroomPage = async ({ studentName, academicYearId, classId }) => {
+  return enrollment_student.count({
+    where: {
+      classId,
+      academicYearId,
+      ...(studentName && {
+        studentName: {
+          [Op.iLike]: `%${studentName}%`, // Case-insensitive search for name
+        },
+      })  
+    }
+  })
+}
+
+exports.getStudentAndParent = async ({ studentId }) => {
+  return student.findOne({
+    raw: true,
+    where: {
+      id: studentId
+    },
+    attributes: ["id", "parentId"]
+  })
+}

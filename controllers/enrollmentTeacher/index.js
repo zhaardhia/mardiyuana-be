@@ -2,7 +2,7 @@ const response = require("../../components/response")
 const { db } = require("../../components/database");
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { INSERT_ENROLLMENT_TEACHER } = require("../../middleware/schema-validator")
+const { INSERT_ENROLLMENT_TEACHER, GET_LIST_STUDENT_TABLE_HOMEROOM_TEACHER } = require("../../middleware/schema-validator")
 const { 
   checkEnrollmentTeacherIsRegistered,
   checkEnrollmentTeacherHomeroomIsRegistered,
@@ -11,7 +11,8 @@ const {
   getAllEnrollTeacherAndCourseByAcademicYear,
   getAllEnrollTeacherHomeroomByAcademicYear,
   checkTeacherIsAlreadyRegisteredAsHomeroom,
-  getAllEnrolledTeacherClassByAcademicYear
+  getAllEnrolledTeacherClassByAcademicYear,
+  getActiveHomeroomTeacher
 } = require("../query/enrollmentTeacher")
 const { 
   checkSchoolClassStatus,
@@ -32,6 +33,10 @@ const {
 const { 
   checkTeacherFullname,
 } = require("../query/teacher")
+const { 
+  totalCountListStudentInHomeroomPage,
+  getListStudentsInHomeroomPage
+} = require("../query/student")
 const { courseConstant } = require("../utils/data")
 const moment = require("moment")
 
@@ -321,6 +326,63 @@ exports.getCourseSectionsAndModules = async (req, res, next) => {
     }).sort((a, b) => a.numberSection - b.numberSection)
     
     return response.res200(res, "000", "Sukses mendapatkan data pelajaran.", courseSections)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.homeroomClassTeacher = async (req, res, next) => {
+  const payload = {
+    page: Number(req.query.page) || undefined,
+    pageSize: Number(req.query.pageSize) || undefined,
+    studentName: req.query.studentName || '',
+  }
+
+  const payloadCheck = await v.compile(GET_LIST_STUDENT_TABLE_HOMEROOM_TEACHER);
+  const resPayloadCheck = await payloadCheck(payload);
+
+  if (resPayloadCheck !== true) {
+    console.log({resPayloadCheck})
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+
+  const { user } = req;
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { page, pageSize, studentName } = payload
+  try {
+    const getActiveAcademicYear = await checkAcademicYearThatActive()
+    const getTeacherEnrollment = await getActiveHomeroomTeacher({ academicYearId: getActiveAcademicYear.id, teacherId: user.userId })
+
+    if (!getTeacherEnrollment) return response.res200(res, "001", `Guru belum terdaftar sebagai wali kelas pada tahun ajaran ${getActiveAcademicYear.academicYear}`)
+
+    const getListStudents = await getListStudentsInHomeroomPage({ 
+      page,
+      pageSize,
+      studentName,
+      academicYearId: getActiveAcademicYear.id,
+      classId: getTeacherEnrollment.classId
+    })
+    const totalData = await totalCountListStudentInHomeroomPage({
+      studentName,
+      academicYearId: getActiveAcademicYear.id,
+      classId: getTeacherEnrollment.classId
+    });
+
+    const totalPages = Math.ceil(totalData / pageSize);
+    const nextPage = getListStudents.length > pageSize ? page + 1 : null
+    // console.log({dataStudent})
+    if (getListStudents.length > pageSize) getListStudents.pop();
+
+    const responseData = {
+      listStudents: [...getListStudents],
+      totalData,
+      totalPages,
+      nextPage
+    }
+
+    return response.res200(res, "000", "Sukses mendapatkan data murid.", responseData)
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Interaksi gagal.")

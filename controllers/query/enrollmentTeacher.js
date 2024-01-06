@@ -156,3 +156,16 @@ exports.getAllEnrolledTeacherClassByAcademicYear = async (academicYearId, teache
     attributes: ["id", "academicYearId", "academicYear", "classId", "className", "status", "teacherType", "courseId", "courseName"]
   })
 }
+
+exports.getActiveHomeroomTeacher = async ({ academicYearId, teacherId }) => {
+  return enrollment_teacher.findOne({
+    raw: true,
+    where: {
+      academicYearId,
+      teacherId,
+      teacherType: "HOMEROOM",
+      status: "ACTIVE"
+    },
+    attributes: ["id", "teacherId", "teacherName", "academicYearId", "academicYear", "classId", "className", "teacherType"]
+  })
+}

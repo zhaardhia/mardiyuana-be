@@ -7,37 +7,27 @@ const { verifyTokenTeacher } = require("../../middleware/token")
 const express = require("express");
 const router = express.Router();
 
-const enrollmentController = require("../../controllers/enrollmentTeacher");
+const teacherNoteController = require("../../controllers/teacherNote");
 
 const index = function (req, res, next) {
   response.res404(res);
 };
 
-router.route("/class")
+router.route("/")
   .get(verifyTokenTeacher, (req, res, next) => {
-    enrollmentController.getAllEnrolledClass(req, res).catch((error) => {
+    teacherNoteController.getAllTeacherNotes(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
     // return response.res200(res, "000", "sukses bang")
   })
-
-router.route("/homeroom")
-  .get(verifyTokenTeacher, (req, res, next) => {
-    enrollmentController.homeroomClassTeacher(req, res).catch((error) => {
+  .post(verifyTokenTeacher, (req, res, next) => {
+    teacherNoteController.insertUpdateTeacherNote(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
     // return response.res200(res, "000", "sukses bang")
   })
-
-// router.route("/refresh-token")
-//   .get((req, res, next) => {
-//     teacherController.refreshTeacherToken(req, res).catch((error) => {
-//       console.error(error);
-//       return response.res500(res, "Internal system error, please try again later!");
-//     });
-//   })
 
 
 router.all("*", index);
