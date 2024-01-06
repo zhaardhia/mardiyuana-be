@@ -28,6 +28,14 @@ router.use(
   },
   require("./mardiyuana-student")
 );
+router.use(
+  "/api/mardiyuana-teacher",
+  (req, res, next) => {
+    // Use token or any validation here.
+    next();
+  },
+  require("./mardiyuana-teacher")
+);
 router.all("/", index);
 router.all("*", index);
 

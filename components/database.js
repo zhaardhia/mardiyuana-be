@@ -32,6 +32,7 @@ const course_section = require("../models/course_section");
 const course_module = require("../models/course_module");
 const event = require("../models/event");
 const announcement = require("../models/announcement");
+const reminder_course = require("../models/reminder_course");
 
 module.exports = {
   admin: admin(db, DataTypes),
@@ -48,5 +49,6 @@ module.exports = {
   course_module: course_module(db, DataTypes),
   event: event(db, DataTypes),
   announcement: announcement(db, DataTypes),
+  reminder_course: reminder_course(db, DataTypes),
   db,
 };

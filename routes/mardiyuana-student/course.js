@@ -7,7 +7,7 @@ const { verifyTokenStudent } = require("../../middleware/token")
 const express = require("express");
 const router = express.Router();
 
-const courseControler = require("../../controllers/course");
+const courseController = require("../../controllers/course");
 
 const index = function (req, res, next) {
   response.res404(res);
@@ -15,13 +15,20 @@ const index = function (req, res, next) {
 
 router.route("/")
   .get(verifyTokenStudent, (req, res, next) => {
-    courseControler.getListCourseStudent(req, res).catch((error) => {
+    courseController.getListCourseStudent(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
     // return response.res200(res, "000", "sukses bang")
   })
-
+router.route("/detail")
+  .get(verifyTokenStudent, (req, res, next) => {
+    courseController.getCourseDetailSession(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+    // return response.res200(res, "000", "sukses bang")
+  })
 
 router.all("*", index);
 

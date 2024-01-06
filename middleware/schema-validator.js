@@ -63,3 +63,21 @@ module.exports.INSERT_UPDATE_ANNOUNCEMENT = {
   title: { type: "string", min: 5, max: 100 }, 
   body: { type: "string", min: 10 }, 
 }
+
+// ANNOUNCEMENT
+module.exports.GET_LIST_ANNOUNCEMENT_TABLE = {
+  page: { type: 'number', positive: true, integer: true },
+  pageSize: { type: 'number', positive: true, integer: true },
+  searchName: { type: "string", min: 0, optional: true }
+}
+
+// REMINDER COURSE
+module.exports.INSERT_UPDATE_REMINDER_COURSE = {
+  id: { type: "string", min: 30, max: 40, optional: true }, 
+  title: { type: "string", min: 5, max: 100 }, 
+  body: { type: "string", min: 10 }, 
+  academicYearId: { type: "string", min: 30, max: 40 }, 
+  courseSectionId: { type: "string", min: 30, max: 40 }, 
+  numberSection: { type: "number" }, 
+  classId: { type: "string", min: 30, max: 40 }, 
+}

@@ -27,3 +27,21 @@ exports.checkAcademicYearThatActive = async () => {
     attributes: ["id", "academicYear"]
   })
 }
+
+exports.getLatestFiveAcademicYear = async () => {
+  return academic_year.findAll({
+    raw: true,
+    order: [['createdDate', 'DESC']],
+    limit: 5
+  })
+}
+
+exports.getDetailAcademicYear = async ({ academicYearId }) => {
+  return academic_year.findOne({
+    raw: true,
+    where: {
+      id: academicYearId
+    },
+    attributes: ["id", "academicYear", "status"]
+  })
+}

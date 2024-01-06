@@ -7,7 +7,7 @@ const { body, param, query, validationResult } = require("express-validator");
 const express = require("express");
 const router = express.Router();
 
-const studentController = require("../../controllers/student");
+const teacherController = require("../../controllers/teacher");
 
 const index = function (req, res, next) {
   response.res404(res);
@@ -15,7 +15,7 @@ const index = function (req, res, next) {
 
 router.route("/login")
   .post((req, res, next) => {
-    studentController.login(req, res).catch((error) => {
+    teacherController.login(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
@@ -24,7 +24,7 @@ router.route("/login")
 
 router.route("/refresh-token")
   .get((req, res, next) => {
-    studentController.refreshStudentToken(req, res).catch((error) => {
+    teacherController.refreshTeacherToken(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });

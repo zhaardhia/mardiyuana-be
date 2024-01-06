@@ -10,7 +10,8 @@ const {
   getAllEnrollTeacherByAcademicYear,
   getAllEnrollTeacherAndCourseByAcademicYear,
   getAllEnrollTeacherHomeroomByAcademicYear,
-  checkTeacherIsAlreadyRegisteredAsHomeroom
+  checkTeacherIsAlreadyRegisteredAsHomeroom,
+  getAllEnrolledTeacherClassByAcademicYear
 } = require("../query/enrollmentTeacher")
 const { 
   checkSchoolClassStatus,
@@ -18,10 +19,15 @@ const {
 } = require("../query/schoolClass")
 const { 
   checkAcademicYearIsRegistered,
-  checkAcademicYearThatActive
+  checkAcademicYearThatActive,
+  getLatestFiveAcademicYear,
+  getDetailAcademicYear
 } = require("../query/academicYear")
 const { 
-  checkCourseStatus
+  checkCourseStatus,
+  getCourseDetailById,
+  getInitialCourseDetailById,
+  getCourseSectionsAndModules
 } = require("../query/course")
 const { 
   checkTeacherFullname,
@@ -206,5 +212,117 @@ exports.initialDataEnrollmentTeacher = async (req, res, next) => {
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Gagal mendapatkan data enrollment guru. Mohon cek kembali data guru tersebut.")
+  }
+}
+
+// Teacher Side
+exports.getAllEnrolledClass = async (req, res, next) => {
+  const { user } = req
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { academicYearId } = req.query;
+
+  try {
+    const getFiveAcademicYear = await getLatestFiveAcademicYear()
+    let academicYearSelected = null
+
+    if (academicYearId) academicYearSelected = getFiveAcademicYear.find(academic => academic.id === academicYearId)
+    else academicYearSelected = getFiveAcademicYear.find(academic => academic.status === "ACTIVE")
+
+    const findEnrollment = await getAllEnrolledTeacherClassByAcademicYear(academicYearSelected.id, user.userId)
+
+    return response.res200(res, "000", "Berhasil mendapatkan kelas terdaftar", {
+      listAcademicYear: getFiveAcademicYear,
+      enrollmentTeacherClass: findEnrollment
+    })
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.getInitialDataInCourseDetail = async (req, res, next) => {
+  const { user } = req
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { classId, courseId, academicYearId } = req.query
+  if (!courseId || !classId || !academicYearId) return response.res400(res, "courseId, classId & academicYearId is required.")
+
+  try {
+    const courseDetail = await getInitialCourseDetailById({ id: courseId })
+    const classDetail = await checkSchoolClassStatus(classId)
+    const academicYear = await getDetailAcademicYear({ academicYearId })
+
+    return response.res200(res, "000", "Sukses mendapatkan initial data untuk detail kelas.", {
+      course: courseDetail,
+      class: classDetail,
+      academicYear: academicYear
+    })
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.getCourseClassDetailTeacher = async (req, res, next) => {
+  const { user } = req
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { courseId, classId } = req.query;
+  if (!courseId || !classId) return response.res400(res, "courseId & classId is required.")
+
+  try {
+    const getDetailCourse = await getCourseDetailById({ id: courseId });
+    if (getDetailCourse.length < 1) return response.res200(res, "001", "Pelajaran tidak terdaftar")
+
+    const courseSections = getDetailCourse.course_sections.map((section) => {
+      const filteredModule = section.course_modules.filter(module => module.type === "MODULE")?.sort((a, b) => a.numberModule - b.numberModule)
+      const filteredSupportedMaterial = section.course_modules.filter(module => module.type === "SUPPORTED_MATERIAL")?.sort((a, b) => a.numberModule - b.numberModule)
+
+      delete section.course_modules
+      return {
+        ...section,
+        modules: filteredModule,
+        supportedMaterial: filteredSupportedMaterial
+      }
+    }).sort((a, b) => a.numberSection - b.numberSection)
+
+    delete getDetailCourse.course_sections
+    
+    getDetailCourse.courseSections = courseSections
+    return response.res200(res, "000", "Sukses mendapatkan data pelajaran.", courseSections)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.getCourseSectionsAndModules = async (req, res, next) => {
+  const { user } = req
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { courseId } = req.query;
+  if (!courseId) return response.res400(res, "courseId & classId is required.")
+
+  try {
+    const getCourseSections = await getCourseSectionsAndModules({ courseId })
+    if (getCourseSections.length < 1) return response.res200(res, "001", "Pelajaran tidak terdaftar")
+
+    const courseSections = getCourseSections.map((section) => {
+      const filteredModule = section.course_modules.filter(module => module.type === "MODULE")?.sort((a, b) => a.numberModule - b.numberModule)
+      const filteredSupportedMaterial = section.course_modules.filter(module => module.type === "SUPPORTED_MATERIAL")?.sort((a, b) => a.numberModule - b.numberModule)
+
+      delete section.course_modules
+      return {
+        ...section,
+        modules: filteredModule,
+        supportedMaterial: filteredSupportedMaterial
+      }
+    }).sort((a, b) => a.numberSection - b.numberSection)
+    
+    return response.res200(res, "000", "Sukses mendapatkan data pelajaran.", courseSections)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
   }
 }

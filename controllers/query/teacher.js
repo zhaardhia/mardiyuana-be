@@ -63,3 +63,37 @@ exports.getDetailTeacherAdmin = async (id) => {
     }
   })
 }
+
+
+// Teacher Side
+
+exports.getTeacherByUsername = async (username) => {
+  return teacher.findOne({
+    raw:true,
+    where: {
+      username
+    }
+  })
+}
+
+exports.updateTeacherRefreshToken = async (userId, refresh_token) => {
+  return teacher.update(
+    {
+      refresh_token
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
+exports.getTeacherRefreshToken = async (refresh_token) => {
+  return teacher.findAll({
+    raw: true,
+    where: {
+      refresh_token
+    }
+  })
+}

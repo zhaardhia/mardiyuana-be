@@ -197,11 +197,11 @@ exports.login = async (req, res, next) => {
   const email = user.email
   const username = user.username
 
-  const accessToken = jwt.sign({ userId, name, username }, process.env.ACCESS_TOKEN_SECRET, {
+  const accessToken = jwt.sign({ userId, name, username }, process.env.ACCESS_TOKEN_SECRET_STUDENT, {
     expiresIn: '20s'
   })
 
-  const refreshToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET, {
+  const refreshToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET_STUDENT, {
     expiresIn: '1d'
   })
   console.log({ refreshToken })
@@ -235,11 +235,11 @@ exports.refreshStudentToken = async (req, res, next) => {
     const user = await getStudentRefreshToken(refreshToken);
     if (!user[0]) return response.res401(res);
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, decoded) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_STUDENT, (error, decoded) => {
       if (error) return response.res401(res)
       const { id: userId, email, fullname: name } = user[0]
-      const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: '15s'
+      const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET_STUDENT, {
+        expiresIn: process.env.REFRESH_TOKEN_DURATION
       })
 
       return response.res200(res, "000", "Success generate token.", accessToken);

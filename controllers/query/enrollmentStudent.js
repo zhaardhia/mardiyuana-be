@@ -91,6 +91,20 @@ exports.getAllEnrollmentStudentByStudentId = async ({
       status: {
         [Op.in]: ["GRADUATED", "ACTIVE"]
       },
-    }
+    },
+    attributes: { exclude: ['createdDate', 'updatedDate', 'studentId'] }
+  })
+}
+
+exports.getActiveEnrollmentStudentByStudentId = async ({
+  studentId,
+}) => {
+  console.log({studentId})
+  return enrollment_student.findAll({
+    raw: true,
+    where: {
+      studentId,
+      status: "ACTIVE"
+    },
   })
 }

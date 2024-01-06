@@ -6,9 +6,9 @@ const { nanoid } = require("nanoid");
 const { getCurriculumDetail, getCurriculumActive } = require("../query/curriculum")
 const { courseConstant } = require("../utils/data")
 const { checkCourseStatus, getAllCourse } = require("../query/course")
-const { getAllEnrollmentStudentByStudentId } = require("../query/enrollmentStudent")
+const { getAllEnrollmentStudentByStudentId, getActiveEnrollmentStudentByStudentId } = require("../query/enrollmentStudent")
 const { checkAcademicYearIsRegistered } = require("../query/academicYear")
-const { getAllCourseByCurriculumIdAndGrade } = require("../query/course")
+const { getAllCourseByCurriculumIdAndGrade, getCourseDetailById } = require("../query/course")
 
 exports.insertUpdateCourse = async (req, res, next) => {
   const { id, courseIdentifier, grade, curriculumId } = req.body
@@ -87,18 +87,80 @@ exports.getListCourseStudent = async (req, res, next) => {
     const getAllEnrollmentStudent = await getAllEnrollmentStudentByStudentId({ studentId: user.userId })
     if (getAllEnrollmentStudent.length < 1) return response.res200(res, "001", "Murid belum didaftarkan ke tahun ajaran.")
 
-    const mapCourse = await Promise.all(
+    let listCourse = [];
+    let enrollment_student = {}
+    const optionEnrollment = await Promise.all(
       getAllEnrollmentStudent.map(async (enrollment) => {
         const academicYearStudent = await checkAcademicYearIsRegistered(enrollment.academicYearId);
-        const allCourse = await getAllCourseByCurriculumIdAndGrade({ curriculumId: academicYearStudent.curriculumId, grade: Number(enrollment.className.charAt(0)) })
+
+        if (academicYearId && academicYearId === enrollment.academicYeariD) {
+          const allCourse = await getAllCourseByCurriculumIdAndGrade({ 
+            curriculumId: academicYearStudent.curriculumId,
+            grade: Number(enrollment.className.charAt(0)),
+            academicYearId: academicYearId,
+            className: enrollment.className
+          })
+
+          listCourse = [...allCourse];
+        } else if (!academicYearId && enrollment.status === "ACTIVE") {
+          const allCourse = await getAllCourseByCurriculumIdAndGrade({ 
+            curriculumId: academicYearStudent.curriculumId,
+            grade: Number(enrollment.className.charAt(0)),
+            academicYearId: enrollment.academicYearId,
+            className: enrollment.className
+          })
+          listCourse = [...allCourse];
+
+          enrollment_student.classId = enrollment.classId
+          enrollment_student.className = enrollment.className
+          enrollment_student.academicYearId = enrollment.academicYearId
+          enrollment_student.academicYear = enrollment.academicYear
+        }
+
         return {
-          ...allCourse,
           ...enrollment
         }
       })
     );
 
-    return response.res200(res, "000", "Sukses mendapatkan data pelajaran murid.", mapCourse)
+    const responseObj = {
+      optionEnrollment,
+      listCourse,
+      enrollment_student
+    }
+    return response.res200(res, "000", "Sukses mendapatkan data pelajaran murid.", responseObj)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.getCourseDetailSession = async (req, res, next) => {
+  const { user } = req
+  const { courseId } = req.query
+
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  try {
+    const getDetailCourse = await getCourseDetailById({ id: courseId });
+    if (getDetailCourse.length < 1) return response.res200(res, "001", "Pelajaran tidak terdaftar")
+
+    const courseSections = getDetailCourse.course_sections.map((section) => {
+      const filteredModule = section.course_modules.filter(module => module.type === "MODULE")?.sort((a, b) => a.numberModule - b.numberModule)
+      const filteredSupportedMaterial = section.course_modules.filter(module => module.type === "SUPPORTED_MATERIAL")?.sort((a, b) => a.numberModule - b.numberModule)
+
+      delete section.course_modules
+      return {
+        ...section,
+        modules: filteredModule,
+        supportedMaterial: filteredSupportedMaterial
+      }
+    }).sort((a, b) => a.numberSection - b.numberSection)
+
+    delete getDetailCourse.course_sections
+    
+    getDetailCourse.courseSections = courseSections
+    return response.res200(res, "000", "Sukses mendapatkan data pelajaran.", courseSections)
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Interaksi gagal.")
