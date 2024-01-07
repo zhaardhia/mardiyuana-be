@@ -97,3 +97,22 @@ module.exports.INSERT_UPDATE_TEACHER_NOTE = {
   studentId: { type: "string", min: 30, max: 40 },
   classId: { type: "string", min: 30, max: 40 }, 
 }
+
+// INSERT UPDATE SCORE COURSE
+module.exports.INSERT_UPDATE_SCORE_COURSE = {
+  id: { type: "string", min: 30, max: 40, optional: true },
+  title: { type: "string", min: 5, max: 100 }, 
+  body: { type: "string", min: 10 }, 
+  type: { type: "enum", values: ["ASSIGNMENT", "DAILY_EXAM", "MID_EXAM", "FINAL_EXAM"]},
+  classId: { type: "string", min: 30, max: 40 },
+  courseId: { type: "string", min: 30, max: 40 },
+  scoreDue: { type: "date" },
+}
+
+// GET ALL SCORE COURSE
+module.exports.GET_ALL_SCORE_COURSE = {
+  type: { type: "enum", values: ["ASSIGNMENT", "DAILY_EXAM", "MID_EXAM", "FINAL_EXAM"]},
+  classId: { type: "string", min: 30, max: 40 },
+  courseId: { type: "string", min: 30, max: 40 },
+  academicYearId: { type: "string", min: 30, max: 40 },
+}

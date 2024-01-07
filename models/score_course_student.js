@@ -1,37 +1,37 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('enrollment_student', {
+  return sequelize.define('score_course_student', {
     id: {
       type: DataTypes.STRING(36),
       allowNull: false,
       primaryKey: true
     },
+    scoreCourseId: {
+      type: DataTypes.STRING(36),
+      allowNull: false
+    },
+    score: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('DONE','NOT_DONE'),
+      allowNull: true
+    },
     studentId: {
       type: DataTypes.STRING(36),
       allowNull: false
     },
-    studentName: {
-      type: DataTypes.STRING(255),
+    courseId: {
+      type: DataTypes.STRING(36),
       allowNull: false
     },
     classId: {
       type: DataTypes.STRING(36),
       allowNull: false
     },
-    className: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    status: {
-      type: DataTypes.ENUM('ACTIVE','INACTIVE','GRADUATED'),
-      allowNull: false
-    },
     academicYearId: {
       type: DataTypes.STRING(36),
-      allowNull: false
-    },
-    academicYear: {
-      type: DataTypes.STRING(100),
       allowNull: false
     },
     createdDate: {
@@ -44,7 +44,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'enrollment_student',
+    tableName: 'score_course_student',
     timestamps: false,
     indexes: [
       {

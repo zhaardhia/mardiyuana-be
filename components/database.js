@@ -34,6 +34,8 @@ const event = require("../models/event");
 const announcement = require("../models/announcement");
 const reminder_course = require("../models/reminder_course");
 const teacher_note = require("../models/teacher_note");
+const score_course = require("../models/score_course");
+const score_course_student = require("../models/score_course_student");
 
 module.exports = {
   admin: admin(db, DataTypes),
@@ -52,5 +54,7 @@ module.exports = {
   announcement: announcement(db, DataTypes),
   reminder_course: reminder_course(db, DataTypes),
   teacher_note: teacher_note(db, DataTypes),
+  score_course: score_course(db, DataTypes),
+  score_course_student: score_course_student(db, DataTypes),
   db,
 };

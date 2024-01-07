@@ -18,7 +18,8 @@ const {
   checkAcademicYearThatActive
 } = require("../query/academicYear")
 const { 
-  checkExistingStudent
+  checkExistingStudent,
+  getStudentName
 } = require("../query/student")
 const moment = require("moment")
 
@@ -38,6 +39,8 @@ exports.insertUpdateEnrollmentStudent = async (req, res, next) => {
       if (checkEnrollmentStudent) return response.res200(res, "001", "Siswa sudah terdaftar pada tahun ajaran ini.")
     }
 
+    const checkStudentName = await getStudentName({ studentId })
+    console.log({checkStudentName})
     const checkAcademicYear = await checkAcademicYearIsRegistered(academicYearId)
     if (!checkAcademicYear) return response.res200(res, "001", `Tahun ajaran belum terdaftar.`)
 
@@ -59,6 +62,7 @@ exports.insertUpdateEnrollmentStudent = async (req, res, next) => {
 
     await insertEnrollmentStudent({ 
       studentId,
+      studentName: checkStudentName.fullname,
       classId,
       className: checkClass.name,
       academicYearId,

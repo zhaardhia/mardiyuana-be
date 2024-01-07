@@ -20,6 +20,7 @@ exports.checkEnrollmentStudentIsRegistered = async (studentId, academicYearId) =
 
 exports.insertEnrollmentStudent = async ({
   studentId,
+  studentName,
   classId,
   className,
   academicYearId,
@@ -28,6 +29,7 @@ exports.insertEnrollmentStudent = async ({
   return enrollment_student.create({
     id: nanoid(36),
     studentId,
+    studentName,
     classId,
     className,
     status: "ACTIVE",
@@ -106,5 +108,18 @@ exports.getActiveEnrollmentStudentByStudentId = async ({
       studentId,
       status: "ACTIVE"
     },
+  })
+}
+
+exports.getAllEnrollmentStudentByClassIdForInsertScore = async ({
+  classId, academicYearId
+}) => {
+  return enrollment_student.findAll({
+    raw: true,
+    where: {
+      status: "ACTIVE",
+      classId,
+      academicYearId
+    }
   })
 }

@@ -1,7 +1,7 @@
 "use strict";
 
 const response = require("../../components/response")
-const { db, student, parent } = require("../../components/database");
+const { db, student, parent, enrollment_student } = require("../../components/database");
 const { nanoid } = require("nanoid");
 const jwt = require("jsonwebtoken")
 const { validationEmail } = require("../../middleware/validator")
@@ -52,6 +52,19 @@ exports.editStudentAndParent = async (req, res, next) => {
       ...studentPayload,
       updatedDate: new Date()
     }
+    console.log({payloadStudent})
+    if (payloadStudent.name) {
+      await enrollment_student.update(
+        {
+          studentName: payloadStudent.fullname
+        },
+        {
+          where: {
+            studentId: payloadStudent.id
+          }
+        }
+      )
+    }
     console.log({payloadParent, payloadStudent})
     await parent.update(payloadParent, { where: { id: parentPayload.id } });
     await student.update(payloadStudent, { where: { id: studentPayload.id } });
@@ -99,16 +112,25 @@ exports.listTableStudentAdmin = async (req, res, next) => {
         dataStudent = await getListStudentAdminNotEnrolled(page, pageSize, studentName, getActiveAcademicYear.id);
         if (dataStudent.length > 0) {
           dataStudent = dataStudent?.map((data) => {
-            
+            // ["id", "fullname", "name", "email", "username", "createdDate", "bornIn", "bornAt", "phone"]
             return {
               id: data.id,
               fullname: data.fullname,
+              name: data.name,
+              email: data.email,
+              username: data.username,
               createdDate: data.createdDate,
               bornIn: data.bornIn,
               bornAt: data.bornAt,
               parent: {
                 id: data.parentId,
-                fullname: data.parentName,
+                fullname: data.parentFullname,
+                name: data.parentName,
+                email: data.parentEmail,
+                username: data.parentUsername,
+                createdDate: data.parentCreatedDate,
+                bornIn: data.parentBornIn,
+                bornAt: data.parentBornAt,
                 phone: data.parentPhone
               }
             }
@@ -144,7 +166,7 @@ exports.listTableStudentAdmin = async (req, res, next) => {
     const nextPage = dataStudent.length > pageSize ? page + 1 : null
     // console.log({dataStudent})
     if (dataStudent.length > pageSize) dataStudent.pop();
-
+    console.log({dataStudent})
     const responseData = {
       studentData: [...dataStudent],
       totalData: totalCount,

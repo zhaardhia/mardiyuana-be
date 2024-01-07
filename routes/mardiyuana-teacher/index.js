@@ -17,6 +17,7 @@ router.use("/session", require("./session"));
 router.use("/enrollment", require("./enrollment"));
 router.use("/course", require("./course"));
 router.use("/teacher-note", require("./teacherNote"));
+router.use("/score-course", require("./scoreCourse"));
 
 router.all('*', index);
 

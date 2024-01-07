@@ -19,6 +19,17 @@ exports.checkExistingStudent = async (id) => {
   })
 }
 
+exports.getStudentName = async ({ studentId }) => {
+  return student.findOne({
+    raw: true,
+    where: {
+      id: studentId
+    },
+    attributes: ["id", "fullname"]
+  })
+}
+
+
 exports.totalCountListStudentAdmin = async (academicYearId, studentName) => {
   const parentAssociate = student.hasOne(parent, {foreignKey: "id", sourceKey: "parentId"})
   const enrollmentStudentAssociate = student.hasOne(enrollment_student, {foreignKey: "studentId", sourceKey: "id"})
@@ -93,9 +104,10 @@ exports.getListStudentAdminEnrolled = async (page, pageSize, studentName, academ
 
 exports.getListStudentAdminNotEnrolled = async (page, pageSize, studentName, academicYearId) => {
   const parentAssociate = student.hasOne(parent, { foreignKey: "id", sourceKey: "parentId" });
-
+//["id", "fullname", "name", "email", "username", "bornIn", "bornAt", "phone"]
   const sqlQuery = `
-    SELECT student.id, student.fullname, student.createdDate, student.bornIn, student.bornAt, parent.id AS parentId, parent.fullname AS parentName, parent.phone AS parentPhone
+    SELECT 
+    student.id, student.fullname, student.name, student.email, student.username, student.createdDate, student.bornIn, student.bornAt, student.phone, parent.id AS parentId, parent.fullname AS parentFullname, parent.name AS parentName, parent.email AS parentEmail, parent.username AS parentUsername, parent.phone AS parentPhone, parent.createdDate AS parentCreatedDate, parent.bornIn AS parentBornIn, parent.bornAt AS parentBornAt
     FROM student
     LEFT JOIN parent ON student.parentId = parent.id
     WHERE student.status = 'ACTIVE'

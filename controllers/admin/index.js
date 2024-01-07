@@ -222,7 +222,7 @@ exports.login = async (req, res, next) => {
 
   res.cookie('refreshToken', refreshToken, {
     // httpOnly: true,
-    maxAge: 24 * 60 * 60 * 10,
+    maxAge: 24 * 60 * 60 * 1000,
     // domain: 'https://mertapada-investor-frontend2.vercel.app',
     // secure: true, // Use for HTTPS only
     // httpOnly: true, // Ensure the cookie is not accessible via JavaScript
