@@ -19,14 +19,12 @@ router.route("/")
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
-    // return response.res200(res, "000", "sukses bang")
   })
   .get(verifyTokenTeacher, (req, res, next) => {
     scoreCourseController.getAllScoreCourseInTeacher(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
-    // return response.res200(res, "000", "sukses bang")
   })
 
 router.route("/detail")
@@ -35,7 +33,20 @@ router.route("/detail")
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
-    // return response.res200(res, "000", "sukses bang")
+  })
+
+router.route("/score-course-student")
+  .get(verifyTokenTeacher, (req, res, next) => {
+    scoreCourseController.getListScoreCourseStudent(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+  .put(verifyTokenTeacher, (req, res, next) => {
+    scoreCourseController.editScoreCourseStudent(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
   })
   
   // .post(verifyTokenTeacher, (req, res, next) => {

@@ -116,3 +116,17 @@ module.exports.GET_ALL_SCORE_COURSE = {
   courseId: { type: "string", min: 30, max: 40 },
   academicYearId: { type: "string", min: 30, max: 40 },
 }
+
+// CHECK STATUS SCORE COURSE STUDENT LIST
+module.exports.GET_LIST_SCORE_COURSE_STUDENT = {
+  page: { type: 'number', positive: true, integer: true },
+  pageSize: { type: 'number', positive: true, integer: true },
+  scoreCourseId: { type: "string", min: 30, max: 40 },
+}
+
+// EDIT SCORE COURSE STUDENT
+module.exports.EDIT_LIST_SCORE_COURSE_STUDENT = {
+  scoreCourseStudentId: { type: "string", min: 30, max: 40 },
+  score: { type: 'number', integer: true },
+  status: { type: "enum", values: ["DONE", "NOT_DONE"]},
+}

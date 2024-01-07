@@ -2,7 +2,12 @@ const response = require("../../components/response")
 const Validator = require("fastest-validator");
 const { db } = require("../../components/database")
 const v = new Validator();
-const { INSERT_UPDATE_SCORE_COURSE, GET_ALL_SCORE_COURSE } = require("../../middleware/schema-validator")
+const { 
+  INSERT_UPDATE_SCORE_COURSE,
+  GET_ALL_SCORE_COURSE,
+  GET_LIST_SCORE_COURSE_STUDENT,
+  EDIT_LIST_SCORE_COURSE_STUDENT 
+} = require("../../middleware/schema-validator")
 const moment = require("moment");
 const { nanoid } = require("nanoid");
 const { 
@@ -19,7 +24,10 @@ const {
   updateScoreCourse,
   insertScoreCourseStudent,
   getAllSchoolCourse,
-  getSchoolCourseDetail
+  getSchoolCourseDetail,
+  getListScoreCourseStudentPage,
+  totalCountListScoreCourseStudentPage,
+  editScoreCourseStudent
 } = require("../query/scoreCourse")
 const {
   getAllEnrollmentStudentByClassIdForInsertScore
@@ -159,6 +167,85 @@ exports.insertUpdateScoreCourse = async (req, res, next) => {
     console.log(error)
 
     if (dbTransaction) await dbTransaction.rollback()
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.getListScoreCourseStudent = async (req, res, next) => {
+  const payload = {
+    page: Number(req.query.page) || undefined,
+    pageSize: Number(req.query.pageSize) || undefined,
+    scoreCourseId: req.query.scoreCourseId || '',
+  }
+
+  const payloadCheck = await v.compile(GET_LIST_SCORE_COURSE_STUDENT);
+  const resPayloadCheck = await payloadCheck(payload);
+
+  if (resPayloadCheck !== true) {
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+
+  const { user } = req;
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { page, pageSize, scoreCourseId } = payload
+  try {
+    const getListStudents = await getListScoreCourseStudentPage(
+      page,
+      pageSize,
+      scoreCourseId
+    )
+    const totalData = await totalCountListScoreCourseStudentPage(
+      scoreCourseId
+    );
+
+    const totalPages = Math.ceil(totalData / pageSize);
+    const nextPage = getListStudents.length > pageSize ? page + 1 : null
+    // console.log({dataStudent})
+    if (getListStudents.length > pageSize) getListStudents.pop();
+
+    const responseData = {
+      listStudentScore: [...getListStudents],
+      totalData,
+      totalPages,
+      nextPage
+    }
+
+    return response.res200(res, "000", "Sukses mendapatkan data score murid.", responseData)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.editScoreCourseStudent = async (req, res, next) => {
+  const payload = {
+    score: Number(req.body.score) || undefined,
+    status: req.body.status || '',
+    scoreCourseStudentId: req.body.scoreCourseStudentId || '',
+  }
+  console.log({payload})
+  const payloadCheck = await v.compile(EDIT_LIST_SCORE_COURSE_STUDENT);
+  const resPayloadCheck = await payloadCheck(payload);
+
+  if (resPayloadCheck !== true) {
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+
+  const { user } = req;
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { score, status, scoreCourseStudentId } = payload
+
+  try {
+    await editScoreCourseStudent({
+      id: scoreCourseStudentId,
+      score,
+      status
+    })
+    return response.res200(res, "000", "Sukses mengubah data score murid.")
+  } catch (error) {
+    console.error(error)
     return response.res200(res, "001", "Interaksi gagal.")
   }
 }

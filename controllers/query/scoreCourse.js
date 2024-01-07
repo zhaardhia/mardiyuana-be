@@ -6,7 +6,9 @@ const { db } = require("../../components/database")
 const { Op } = sequelize;
 const { 
   score_course,
-  score_course_student
+  score_course_student,
+  student,
+  school_class
 } = require("../../components/database");
 
 exports.insertScoreCourse = async (payload) => {
@@ -44,9 +46,50 @@ exports.getSchoolCourseDetail = async ({ id }) => {
   })
 }
 
-// exports.getSchoolCourseDetail = async ({ id }) => {
-//   return score_course.findOne({
-//     raw: true,
-//     where: { id }
-//   })
-// }
+exports.getListScoreCourseStudentPage = async (page, pageSize, scoreCourseId) => {
+  const studentAssociate = score_course_student.hasOne(student, {foreignKey: "id", sourceKey: "studentId"})
+  const classAssociate = score_course_student.hasOne(school_class, {foreignKey: "id", sourceKey: "classId"})
+
+  return score_course_student.findAll({
+    include: [
+      {
+        association: studentAssociate,
+        attributes: ["id", "fullname"],
+        // required: true,
+      },
+      {
+        association: classAssociate,
+        attributes: ["id", "name"],
+        // required: true,
+      }
+    ],
+    limit: pageSize + 1,
+    offset: (page - 1) * pageSize,
+    order: [['createdDate', 'DESC']],
+    // raw: true,
+    where: {
+      scoreCourseId
+    }
+  })
+}
+
+exports.totalCountListScoreCourseStudentPage = async (scoreCourseId) => {
+  return score_course_student.count({
+    where: {
+      scoreCourseId
+    }
+  })
+}
+
+exports.editScoreCourseStudent = async ({ id, score, status }) => {
+  return score_course_student.update(
+    {
+      score, status
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}
