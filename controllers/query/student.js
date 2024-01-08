@@ -270,6 +270,7 @@ exports.getStudentRefreshToken = async (refresh_token) => {
 }
 
 exports.getListStudentsInHomeroomPage = async ({ page, pageSize, studentName, academicYearId, classId }) => {
+  console.log({classId})
   const studentAssociate = enrollment_student.hasOne(student, {foreignKey: "id", sourceKey: "studentId"})
   return enrollment_student.findAll({
     limit: pageSize + 1,

@@ -130,3 +130,10 @@ module.exports.EDIT_LIST_SCORE_COURSE_STUDENT = {
   score: { type: 'number', integer: true },
   status: { type: "enum", values: ["DONE", "NOT_DONE"]},
 }
+
+// CLASSMATE LIST STUDENT 
+module.exports.GET_LIST_CLASSMATE = {
+  page: { type: 'number', positive: true, integer: true },
+  pageSize: { type: 'number', positive: true, integer: true },
+  studentName: { type: "string", min: 0, optional: true }, 
+}

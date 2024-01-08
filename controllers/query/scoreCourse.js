@@ -73,6 +73,16 @@ exports.getListScoreCourseStudentPage = async (page, pageSize, scoreCourseId) =>
   })
 }
 
+exports.getDetailScoreCourseStudent = async (scoreCourseId) => {
+  return score_course_student.findOne({
+    raw: true,
+    where: {
+      scoreCourseId
+    },
+    attributes: ["id", "scoreCourseId", "score", "status", "type"]
+  })
+}
+
 exports.totalCountListScoreCourseStudentPage = async (scoreCourseId) => {
   return score_course_student.count({
     where: {

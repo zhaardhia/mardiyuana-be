@@ -16,6 +16,8 @@ router.use("/test", require("./test"));
 router.use("/dashboard", require("./dashboard"));
 router.use("/session", require("./session"));
 router.use("/course", require("./course"));
+router.use("/score-course", require("./scoreCourse"));
+router.use("/school-class", require("./schoolClass"));
 
 router.all('*', index);
 

@@ -102,7 +102,7 @@ exports.getActiveEnrollmentStudentByStudentId = async ({
   studentId,
 }) => {
   console.log({studentId})
-  return enrollment_student.findAll({
+  return enrollment_student.findOne({
     raw: true,
     where: {
       studentId,

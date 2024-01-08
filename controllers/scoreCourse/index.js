@@ -27,7 +27,8 @@ const {
   getSchoolCourseDetail,
   getListScoreCourseStudentPage,
   totalCountListScoreCourseStudentPage,
-  editScoreCourseStudent
+  editScoreCourseStudent,
+  getDetailScoreCourseStudent
 } = require("../query/scoreCourse")
 const {
   getAllEnrollmentStudentByClassIdForInsertScore
@@ -88,6 +89,42 @@ exports.getDetailScoreCourse = async (req, res, next) => {
       }
     }
     return response.res200(res, "000", "Sukses mendapatkan data tugas / ulangan.", objResponse)
+  } catch (error) {
+    console.log(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.getAllScoreCourseWithScore = async (req, res, next) => {
+  const { user } = req
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const payloadCheck = await v.compile(GET_ALL_SCORE_COURSE);
+  const resPayloadCheck = await payloadCheck(req.query);
+
+  if (resPayloadCheck !== true) {
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+
+  const { academicYearId, classId, courseId, type } = req.query
+  
+  try {
+    const getListScoreCourse = await getAllSchoolCourse({
+      academicYearId,
+      classId,
+      courseId,
+      type
+    })
+    if (getListScoreCourse.length < 1) return response.res200(res, "001", "Belum ada data tugas / ulangan yang terpilih.")
+
+    const listScoreCourse = await Promise.all(
+      getListScoreCourse.map( async (scoreCourse) => {
+        const detailScoreCourse = await getDetailScoreCourseStudent(scoreCourse.id)
+        return { ...scoreCourse, ...detailScoreCourse }
+      })
+    )
+
+    return response.res200(res, "000", "Sukses mendapatkan data tugas / ulangan.", listScoreCourse)
   } catch (error) {
     console.log(error)
     return response.res200(res, "001", "Interaksi gagal.")
