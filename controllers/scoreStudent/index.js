@@ -38,7 +38,7 @@ exports.getStudentScoreData = async (req, res, next) => {
     if (!academicYear) return response.res400(res, "academicYear is not found.")
 
     curriculumData = { id: academicYear.curriculumId, name: academicYear.curriculumName }
-    const getEnrollSelected = await checkEnrollmentStudentGrade(user.userId, academicYearId)
+    const getEnrollSelected = await checkEnrollmentStudentGrade(user.userId, idAcademicYear)
     if (!getEnrollSelected) return response.res400(res, "enrollment is not found in this academic year.")
 
     const grade = Number(getEnrollSelected.className.charAt(0))
