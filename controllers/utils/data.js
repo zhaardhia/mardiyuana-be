@@ -60,3 +60,5 @@ exports.courseConstant = [
     grade: [8, 9]
   },
 ]
+
+exports.scoreCourseConstantType = ["ASSIGNMENT", "DAILY_EXAM", "MID_EXAM", "FINAL_EXAM"]

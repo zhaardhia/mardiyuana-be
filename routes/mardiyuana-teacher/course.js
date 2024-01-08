@@ -44,7 +44,6 @@ router.route("/reminder-courses")
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
-    // return response.res200(res, "000", "sukses bang")
   })
 
 router.route("/reminder-course")
@@ -53,7 +52,6 @@ router.route("/reminder-course")
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
-    // return response.res200(res, "000", "sukses bang")
   })
   .post(verifyTokenTeacher, (req, res, next) => {
     reminderCourseController.insertUpdateReminderCourse(req, res).catch((error) => {

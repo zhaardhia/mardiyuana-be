@@ -7,8 +7,9 @@ const { getCurriculumDetail, getCurriculumActive } = require("../query/curriculu
 const { courseConstant } = require("../utils/data")
 const { checkCourseStatus, getAllCourse } = require("../query/course")
 const { getAllEnrollmentStudentByStudentId, getActiveEnrollmentStudentByStudentId } = require("../query/enrollmentStudent")
-const { checkAcademicYearIsRegistered } = require("../query/academicYear")
-const { getAllCourseByCurriculumIdAndGrade, getCourseDetailById } = require("../query/course")
+const { checkAcademicYearIsRegistered, getDetailAcademicYear } = require("../query/academicYear")
+const { getAllCourseByCurriculumIdAndGrade, getCourseDetailById, getInitialCourseDetailById } = require("../query/course")
+const { checkSchoolClassStatus } = require("../query/schoolClass")
 
 exports.insertUpdateCourse = async (req, res, next) => {
   const { id, courseIdentifier, grade, curriculumId } = req.body
@@ -77,12 +78,35 @@ exports.getAllCourse = async (req, res, next) => {
 
 // STUDENT SIDE
 
+exports.getInitialDataInCourseDetail = async (req, res, next) => {
+  const { user } = req
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { classId, courseId, academicYearId } = req.query
+  if (!courseId || !classId || !academicYearId) return response.res400(res, "courseId, classId & academicYearId is required.")
+
+  try {
+    const courseDetail = await getInitialCourseDetailById({ id: courseId })
+    const classDetail = await checkSchoolClassStatus(classId)
+    const academicYear = await getDetailAcademicYear({ academicYearId })
+
+    return response.res200(res, "000", "Sukses mendapatkan initial data untuk detail kelas.", {
+      course: courseDetail,
+      class: classDetail,
+      academicYear: academicYear
+    })
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
 exports.getListCourseStudent = async (req, res, next) => {
   const { user } = req
   const { academicYearId } = req.query
 
   if (!user) return response.res400(res, "user is not logged in.")
-  console.log({user})
+
   try {
     const getAllEnrollmentStudent = await getAllEnrollmentStudentByStudentId({ studentId: user.userId })
     if (getAllEnrollmentStudent.length < 1) return response.res200(res, "001", "Murid belum didaftarkan ke tahun ajaran.")

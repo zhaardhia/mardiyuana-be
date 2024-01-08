@@ -123,3 +123,14 @@ exports.getAllEnrollmentStudentByClassIdForInsertScore = async ({
     }
   })
 }
+
+exports.checkEnrollmentStudentGrade = async (studentId, academicYearId) => {
+  return enrollment_student.findOne({
+    raw: true,
+    where: {
+      studentId,
+      academicYearId
+    },
+    attributes: ["id", "studentId", "classId", "className"]
+  })
+}

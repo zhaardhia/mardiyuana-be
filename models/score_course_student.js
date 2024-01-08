@@ -18,6 +18,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('DONE','NOT_DONE'),
       allowNull: true
     },
+    type: {
+      type: DataTypes.ENUM('ASSIGNMENT','DAILY_EXAM','MID_EXAM','FINAL_EXAM'),
+      allowNull: false
+    },
     studentId: {
       type: DataTypes.STRING(36),
       allowNull: false

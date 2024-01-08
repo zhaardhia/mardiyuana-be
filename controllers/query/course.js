@@ -18,6 +18,17 @@ exports.checkCourseStatus = async (courseIdentifier, grade) => {
   })
 }
 
+exports.getCourseByGradeAndCurriculum = async ({ grade, curriculumId }) => {
+  return course.findAll({
+    raw: true,
+    where: {
+      curriculumId,
+      grade
+    },
+    attributes: { exclude: ["createdDate", "updatedDate", "curriculumName"] }
+  })
+}
+
 exports.checkCourseStatusByCourseId = async (courseId) => {
   return course.findOne({
     raw: true,
