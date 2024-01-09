@@ -12,7 +12,8 @@ const {
   getAllEnrollTeacherHomeroomByAcademicYear,
   checkTeacherIsAlreadyRegisteredAsHomeroom,
   getAllEnrolledTeacherClassByAcademicYear,
-  getActiveHomeroomTeacher
+  getActiveHomeroomTeacher,
+  getClassCourseAndAcademicYearByEnrollmentTeacherId
 } = require("../query/enrollmentTeacher")
 const { 
   checkSchoolClassStatus,
@@ -250,9 +251,13 @@ exports.getInitialDataInCourseDetail = async (req, res, next) => {
   const { user } = req
   if (!user) return response.res400(res, "user is not logged in.")
 
-  const { classId, courseId, academicYearId } = req.query
-  if (!courseId || !classId || !academicYearId) return response.res400(res, "courseId, classId & academicYearId is required.")
+  const { id } = req.query
+  if (!id) return response.res400(res, "courseId, classId & academicYearId is required.")
 
+  const getEnrollmentData = await getClassCourseAndAcademicYearByEnrollmentTeacherId({ id })
+  if (!getEnrollmentData) return response.res400(res, "guru belum terdaftar pada mata pelajaran ini")
+
+  const { classId, courseId, academicYearId } = getEnrollmentData
   try {
     const courseDetail = await getInitialCourseDetailById({ id: courseId })
     const classDetail = await checkSchoolClassStatus(classId)

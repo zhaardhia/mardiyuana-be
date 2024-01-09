@@ -7,6 +7,15 @@ const { Op } = sequelize;
 const { enrollment_student } = require("../../components/database");
 const { nanoid } = require("nanoid");
 
+exports.getClassAndAcademicYearByEnrollmentId = async ({ id }) => {
+  return enrollment_student.findOne({
+    raw: true,
+    where: {
+      id
+    },
+    attributes: ["id", "classId", "className", "academicYearId", "academicYear"]
+  })
+}
 exports.checkEnrollmentStudentIsRegistered = async (studentId, academicYearId) => {
   return enrollment_student.findOne({
     raw: true,

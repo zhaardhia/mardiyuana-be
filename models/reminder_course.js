@@ -14,10 +14,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(36),
       allowNull: false
     },
-    numberSection: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     classId: {
       type: DataTypes.STRING(36),
       allowNull: false

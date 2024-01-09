@@ -11,11 +11,10 @@ const {
 exports.getListReminderCourseBySectionAndAcademicYear = async ({ courseSectionId, academicYearId, numberSection, classId }) => {
   return reminder_course.findAll({
     raw: true,
-    attributes: { exclude: ["createdDate", "updatedDate"]},
+    attributes: { exclude: ["updatedDate"]},
     where: {
       courseSectionId,
       academicYearId,
-      numberSection: numberSection || 0,
       classId
     }
   })

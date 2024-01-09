@@ -18,19 +18,27 @@ const {
 const { 
   checkTeacherFullname
 } = require("../query/teacher")
+const { getClassAndAcademicYearByEnrollmentId } = require("../query/enrollmentStudent")
+const { getClassCourseAndAcademicYearByEnrollmentTeacherId } = require("../query/enrollmentTeacher")
 
 exports.getAllReminderCourse = async (req, res, next) => {
   const { user } = req
   if (!user) return response.res400(res, "user is not logged in.")
 
-  const { courseSectionId, academicYearId, classId, numberSection } = req.query
-  if (!courseSectionId || !academicYearId || !classId) return response.res400(res, "courseSectionId, academicYearId & classId is required.")
+  const { courseSectionId, id } = req.query
+  if (!courseSectionId || !id) return response.res400(res, "id & courseSectionId is required.")
 
+  const getEnrollmentData = await getClassAndAcademicYearByEnrollmentId({ id })
+  const getEnrollmentDataTeacher = await getClassCourseAndAcademicYearByEnrollmentTeacherId({ id })
+
+  const classId = getEnrollmentData ? getEnrollmentData.classId : getEnrollmentDataTeacher.classId
+  const academicYearId = getEnrollmentData ? getEnrollmentData.academicYearId : getEnrollmentDataTeacher.academicYearId
+  // const { classId, academicYearId } = getEnrollmentData
+  console.log({academicYearId, courseSectionId, classId})
   try {
     const getListReminderCourses = await getListReminderCourseBySectionAndAcademicYear({ 
       academicYearId,
       courseSectionId,
-      numberSection: numberSection || 0,
       classId
     })
     if (getListReminderCourses.length < 1) return response.res200(res, "001", "Belum ada reminder pelajaran untuk bab ini.")
@@ -54,7 +62,7 @@ exports.insertUpdateReminderCourse = async (req, res, next) => {
   }
 
   try {
-    const { id, academicYearId, courseSectionId, numberSection, classId, title, body } = req.body
+    const { id, academicYearId, courseSectionId, classId, title, body } = req.body
 
     const getTeacherData = await checkTeacherFullname(user.userId)
     if (!getTeacherData) return response.res400(res, "teacher is not active.")
@@ -65,7 +73,6 @@ exports.insertUpdateReminderCourse = async (req, res, next) => {
     const payload = {
       academicYearId,
       courseSectionId,
-      numberSection,
       classId,
       className: getClassData.name,
       teacherId: getTeacherData.id,

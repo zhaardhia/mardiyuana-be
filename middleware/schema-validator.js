@@ -78,7 +78,6 @@ module.exports.INSERT_UPDATE_REMINDER_COURSE = {
   body: { type: "string", min: 10 }, 
   academicYearId: { type: "string", min: 30, max: 40 }, 
   courseSectionId: { type: "string", min: 30, max: 40 }, 
-  numberSection: { type: "number" }, 
   classId: { type: "string", min: 30, max: 40 }, 
 }
 
@@ -112,9 +111,10 @@ module.exports.INSERT_UPDATE_SCORE_COURSE = {
 // GET ALL SCORE COURSE
 module.exports.GET_ALL_SCORE_COURSE = {
   type: { type: "enum", values: ["ASSIGNMENT", "DAILY_EXAM", "MID_EXAM", "FINAL_EXAM"]},
-  classId: { type: "string", min: 30, max: 40 },
+  // classId: { type: "string", min: 30, max: 40 },
   courseId: { type: "string", min: 30, max: 40 },
-  academicYearId: { type: "string", min: 30, max: 40 },
+  id: { type: "string", min: 30, max: 40 },
+  // academicYearId: { type: "string", min: 30, max: 40 },
 }
 
 // CHECK STATUS SCORE COURSE STUDENT LIST

@@ -31,8 +31,12 @@ const {
   getDetailScoreCourseStudent
 } = require("../query/scoreCourse")
 const {
-  getAllEnrollmentStudentByClassIdForInsertScore
+  getAllEnrollmentStudentByClassIdForInsertScore,
+  getClassAndAcademicYearByEnrollmentId
 } = require("../query/enrollmentStudent")
+const {
+  getClassCourseAndAcademicYearByEnrollmentTeacherId
+} = require("../query/enrollmentTeacher")
 
 exports.getAllScoreCourseInTeacher = async (req, res, next) => {
   const { user } = req
@@ -45,9 +49,12 @@ exports.getAllScoreCourseInTeacher = async (req, res, next) => {
     return response.res400(res, resPayloadCheck[0].message)
   }
 
-  const { academicYearId, classId, courseId, type } = req.query
+  const { courseId, type, id } = req.query
   
   try {
+    const enrollmentData = await getClassCourseAndAcademicYearByEnrollmentTeacherId({ id })
+    const { academicYearId, classId } = enrollmentData
+
     const getListScoreCourse = await getAllSchoolCourse({
       academicYearId,
       classId,
@@ -106,8 +113,11 @@ exports.getAllScoreCourseWithScore = async (req, res, next) => {
     return response.res400(res, resPayloadCheck[0].message)
   }
 
-  const { academicYearId, classId, courseId, type } = req.query
+  const { id, courseId, type } = req.query
   
+  const getEnrollmentData = await getClassAndAcademicYearByEnrollmentId({ id })
+  const { classId, academicYearId } = getEnrollmentData
+
   try {
     const getListScoreCourse = await getAllSchoolCourse({
       academicYearId,

@@ -34,7 +34,8 @@ exports.getAllSchoolCourse = async ({ type, academicYearId, classId, courseId })
   return score_course.findAll({
     raw: true,
     where: { type, academicYearId, classId, courseId },
-    attributes: ["id", "title", "scoreDue", "updatedDate"]
+    attributes: ["id", "title", "scoreDue", "updatedDate"],
+    order: [["createdDate", "ASC"]]
   })
 }
 

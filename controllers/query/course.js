@@ -111,7 +111,7 @@ exports.getInitialCourseDetailById = async ({ id }) => {
     include: [
       {
         association: courseSectionAssociate,
-        attributes: ["id", "courseId", "numberSection"],        
+        attributes: ["id", "courseId", "name", "numberSection"],        
         order: [['numberSection', 'ASC']]
       },
     ],

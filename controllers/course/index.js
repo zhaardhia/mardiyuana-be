@@ -6,10 +6,11 @@ const { nanoid } = require("nanoid");
 const { getCurriculumDetail, getCurriculumActive } = require("../query/curriculum")
 const { courseConstant } = require("../utils/data")
 const { checkCourseStatus, getAllCourse } = require("../query/course")
-const { getAllEnrollmentStudentByStudentId, getActiveEnrollmentStudentByStudentId } = require("../query/enrollmentStudent")
+const { getAllEnrollmentStudentByStudentId, getClassAndAcademicYearByEnrollmentId } = require("../query/enrollmentStudent")
 const { checkAcademicYearIsRegistered, getDetailAcademicYear } = require("../query/academicYear")
 const { getAllCourseByCurriculumIdAndGrade, getCourseDetailById, getInitialCourseDetailById } = require("../query/course")
 const { checkSchoolClassStatus } = require("../query/schoolClass")
+const { getTeacherByEnrollment } = require("../query/enrollmentTeacher")
 
 exports.insertUpdateCourse = async (req, res, next) => {
   const { id, courseIdentifier, grade, curriculumId } = req.body
@@ -82,18 +83,23 @@ exports.getInitialDataInCourseDetail = async (req, res, next) => {
   const { user } = req
   if (!user) return response.res400(res, "user is not logged in.")
 
-  const { classId, courseId, academicYearId } = req.query
-  if (!courseId || !classId || !academicYearId) return response.res400(res, "courseId, classId & academicYearId is required.")
+  const { courseId, id } = req.query
+  if (!courseId || !id) return response.res400(res, "id & courseId is required.")
 
+  const getEnrollmentData = await getClassAndAcademicYearByEnrollmentId({ id })
+
+  const { classId, academicYearId } = getEnrollmentData
   try {
     const courseDetail = await getInitialCourseDetailById({ id: courseId })
     const classDetail = await checkSchoolClassStatus(classId)
     const academicYear = await getDetailAcademicYear({ academicYearId })
-
+    const teacherData = await getTeacherByEnrollment(academicYearId, classId, courseId)
+    
     return response.res200(res, "000", "Sukses mendapatkan initial data untuk detail kelas.", {
       course: courseDetail,
       class: classDetail,
-      academicYear: academicYear
+      academicYear: academicYear,
+      teacherData: teacherData
     })
   } catch (error) {
     console.error(error)
@@ -135,6 +141,7 @@ exports.getListCourseStudent = async (req, res, next) => {
           })
           listCourse = [...allCourse];
 
+          enrollment_student.id = enrollment.id
           enrollment_student.classId = enrollment.classId
           enrollment_student.className = enrollment.className
           enrollment_student.academicYearId = enrollment.academicYearId
@@ -167,6 +174,7 @@ exports.getCourseDetailSession = async (req, res, next) => {
 
   try {
     const getDetailCourse = await getCourseDetailById({ id: courseId });
+    console.log({courseId})
     if (getDetailCourse.length < 1) return response.res200(res, "001", "Pelajaran tidak terdaftar")
 
     const courseSections = getDetailCourse.course_sections.map((section) => {
