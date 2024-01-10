@@ -82,7 +82,7 @@ exports.getStudentScoreData = async (req, res, next) => {
 
     return response.res200(res, "000", "Sukses mendapatkan data nilai - nilai murid.", {
       optionAcademicYear,
-      scoreCourseStudent: mapScoreCourse
+      scoreCourseStudent: mapScoreCourse || []
     })
   } catch (error) {
     console.error(error)

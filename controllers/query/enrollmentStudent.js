@@ -103,7 +103,8 @@ exports.getAllEnrollmentStudentByStudentId = async ({
         [Op.in]: ["GRADUATED", "ACTIVE"]
       },
     },
-    attributes: { exclude: ['createdDate', 'updatedDate', 'studentId'] }
+    attributes: { exclude: ['createdDate', 'updatedDate', 'studentId'] },
+    order: [["createdDate", "DESC"]]
   })
 }
 
