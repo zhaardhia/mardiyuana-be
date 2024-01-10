@@ -18,7 +18,8 @@ exports.getStudentScoreData = async (req, res, next) => {
   if (!user) return response.res400(res, "user is not logged in.")
   console.log({user})
   try {
-    const getAllEnrollmentStudent = await getAllEnrollmentStudentByStudentId({ studentId: user.userId })
+    const studentId = user.isParent ? user.studentId : user.userId
+    const getAllEnrollmentStudent = await getAllEnrollmentStudentByStudentId({ studentId })
     if (getAllEnrollmentStudent.length < 1) return response.res200(res, "001", "Murid belum didaftarkan ke tahun ajaran.")
 
     getAllEnrollmentStudent.sort((a, b) => b.createdAt - a.createdAt)
@@ -38,7 +39,7 @@ exports.getStudentScoreData = async (req, res, next) => {
     if (!academicYear) return response.res400(res, "academicYear is not found.")
 
     curriculumData = { id: academicYear.curriculumId, name: academicYear.curriculumName }
-    const getEnrollSelected = await checkEnrollmentStudentGrade(user.userId, idAcademicYear)
+    const getEnrollSelected = await checkEnrollmentStudentGrade(studentId, idAcademicYear)
     if (!getEnrollSelected) return response.res400(res, "enrollment is not found in this academic year.")
 
     const grade = Number(getEnrollSelected.className.charAt(0))
@@ -59,7 +60,7 @@ exports.getStudentScoreData = async (req, res, next) => {
             academicYearId: idAcademicYear,
             classId: getEnrollSelected.classId,
             courseId: course.id,
-            studentId: user.userId
+            studentId
           })
 
           if (getAllScoreCourse.length < 1) objScoreType.scoreMean = 0

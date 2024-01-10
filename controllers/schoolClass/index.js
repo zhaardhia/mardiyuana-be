@@ -29,9 +29,9 @@ exports.listAllClassmates = async (req, res, next) => {
   const { page, pageSize, studentName } = payload
   try {
     const getActiveAcademicYear = await checkAcademicYearThatActive()
-    const getStudentEnrollment = await getActiveEnrollmentStudentByStudentId({ academicYearId: getActiveAcademicYear.id, studentId: user.userId })
+    const getStudentEnrollment = await getActiveEnrollmentStudentByStudentId({ academicYearId: getActiveAcademicYear.id, studentId: user.isParent ? user.studentId : user.userId })
 
-    if (!getStudentEnrollment) return response.res200(res, "001", `Guru belum terdaftar sebagai wali kelas pada tahun ajaran ${getActiveAcademicYear.academicYear}`)
+    if (!getStudentEnrollment) return response.res200(res, "001", `Murid belum terdaftar pada tahun ajaran ${getActiveAcademicYear.academicYear}`)
     console.log({getStudentEnrollment})
     const getListStudents = await getListStudentsInHomeroomPage({ 
       page,

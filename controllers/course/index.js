@@ -112,9 +112,9 @@ exports.getListCourseStudent = async (req, res, next) => {
   const { academicYearId } = req.query
 
   if (!user) return response.res400(res, "user is not logged in.")
-
+  console.log({user})
   try {
-    const getAllEnrollmentStudent = await getAllEnrollmentStudentByStudentId({ studentId: user.userId })
+    const getAllEnrollmentStudent = await getAllEnrollmentStudentByStudentId({ studentId: user.isParent ? user.studentId : user.userId })
     if (getAllEnrollmentStudent.length < 1) return response.res200(res, "001", "Murid belum didaftarkan ke tahun ajaran.")
 
     let listCourse = [];

@@ -36,6 +36,14 @@ router.use(
   },
   require("./mardiyuana-teacher")
 );
+router.use(
+  "/api/mardiyuana-parent",
+  (req, res, next) => {
+    // Use token or any validation here.
+    next();
+  },
+  require("./mardiyuana-parent")
+);
 router.all("/", index);
 router.all("*", index);
 

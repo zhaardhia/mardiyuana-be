@@ -21,6 +21,19 @@ exports.getListTeacherNotesOnTeacher = async ({ academicYearId, classId, teacher
   })
 }
 
+exports.getListTeacherNotesOnParent = async ({ academicYearId, classId, parentId, studentId }) => {
+  return teacher_note.findAll({
+    raw: true,
+    attributes: { exclude: ["createdDate", "updatedDate"]},
+    where: {
+      academicYearId,
+      classId,
+      parentId,
+      studentId
+    }
+  })
+}
+
 exports.insertTeacherNote = async (payload) => {
   return teacher_note.create({
     ...payload

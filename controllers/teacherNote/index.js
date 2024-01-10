@@ -10,7 +10,7 @@ const { checkAcademicYearThatActive } = require("../query/academicYear")
 const { getStudentAndParent } = require("../query/student")
 const { checkTeacherFullname } = require("../query/teacher")
 const { checkSchoolClassStatus } = require("../query/schoolClass")
-const { insertTeacherNote, updateTeacherNote, getListTeacherNotesOnTeacher } = require("../query/teacherNote")
+const { insertTeacherNote, updateTeacherNote, getListTeacherNotesOnTeacher, getListTeacherNotesOnParent } = require("../query/teacherNote")
 
 
 exports.getAllTeacherNotes = async (req, res, next) => {
@@ -27,6 +27,30 @@ exports.getAllTeacherNotes = async (req, res, next) => {
       classId,
       studentId,
       teacherId: user.userId
+    })
+    if (getListTeacherNotes.length < 1) return response.res200(res, "001", "Belum ada notes.")
+
+    return response.res200(res, "000", "Sukses mendapatkan data notes.", getListTeacherNotes)
+  } catch (error) {
+    console.log(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.getAllTeacherNotesParentSide = async (req, res, next) => {
+  const { user } = req
+  if (!user) return response.res400(res, "user is not logged in.")
+
+  const { studentId, classId } = req.query
+  if (!studentId || !classId) return response.res400(res, "studentId & classId is required.")
+
+  try {
+    const getActiveAcademicYear = await checkAcademicYearThatActive()
+    const getListTeacherNotes = await getListTeacherNotesOnParent({ 
+      academicYearId: getActiveAcademicYear.id,
+      classId,
+      studentId,
+      parentId: user.userId
     })
     if (getListTeacherNotes.length < 1) return response.res200(res, "001", "Belum ada notes.")
 
