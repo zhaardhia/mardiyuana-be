@@ -5,7 +5,8 @@ const Sequelize = require("sequelize")
 const { db } = require("../../components/database")
 const { Op } = sequelize;
 const { 
-  teacher_note
+  teacher_note,
+  school_class
 } = require("../../components/database");
 
 exports.getListTeacherNotesOnTeacher = async ({ academicYearId, classId, teacherId, studentId }) => {
@@ -22,12 +23,18 @@ exports.getListTeacherNotesOnTeacher = async ({ academicYearId, classId, teacher
 }
 
 exports.getListTeacherNotesOnParent = async ({ academicYearId, classId, parentId, studentId }) => {
+  const classAssociate = teacher_note.hasOne(school_class, {foreignKey: "id", sourceKey: "classId"})
   return teacher_note.findAll({
-    raw: true,
-    attributes: { exclude: ["createdDate", "updatedDate"]},
+    include: [
+      {
+        association: classAssociate,
+        attributes: ["id", "name"]
+      }
+    ],
+    attributes: { exclude: ["updatedDate"]},
     where: {
       academicYearId,
-      classId,
+      ...(classId && { classId }),
       parentId,
       studentId
     }

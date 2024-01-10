@@ -41,15 +41,15 @@ exports.getAllTeacherNotesParentSide = async (req, res, next) => {
   const { user } = req
   if (!user) return response.res400(res, "user is not logged in.")
 
-  const { studentId, classId } = req.query
-  if (!studentId || !classId) return response.res400(res, "studentId & classId is required.")
+  // const { studentId, classId } = req.query
+  // if (!studentId || !classId) return response.res400(res, "studentId & classId is required.")
 
   try {
     const getActiveAcademicYear = await checkAcademicYearThatActive()
     const getListTeacherNotes = await getListTeacherNotesOnParent({ 
       academicYearId: getActiveAcademicYear.id,
-      classId,
-      studentId,
+      // classId,
+      studentId: user.studentId,
       parentId: user.userId
     })
     if (getListTeacherNotes.length < 1) return response.res200(res, "001", "Belum ada notes.")

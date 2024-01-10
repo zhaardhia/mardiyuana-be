@@ -223,18 +223,18 @@ exports.login = async (req, res, next) => {
     expiresIn: '20s'
   })
 
-  const refreshToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET_STUDENT, {
+  const studentToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET_STUDENT, {
     expiresIn: '1d'
   })
-  console.log({ refreshToken })
+  console.log({ studentToken })
   try {
-    await updateStudentRefreshToken(userId, refreshToken)
+    await updateStudentRefreshToken(userId, studentToken)
   } catch (error) {
     console.error(error)
     return response.res400(res, "failed update token")
   }
 
-  res.cookie('refreshToken', refreshToken, {
+  res.cookie('studentToken', studentToken, {
     // httpOnly: true,
     maxAge: 24 * 60 * 60 * 10,
     // domain: 'https://mertapada-investor-frontend2.vercel.app',
@@ -246,18 +246,18 @@ exports.login = async (req, res, next) => {
     // path: "/",
     // sameSite: "None"
   })
-  return response.res200(res, "000", "Login Berhasil.", { accessToken, refreshToken })
+  return response.res200(res, "000", "Login Berhasil.", { accessToken, studentToken })
 }
 
 exports.refreshStudentToken = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) return response.res401(res)
-    console.log({refreshToken})
-    const user = await getStudentRefreshToken(refreshToken);
+    const studentToken = req.cookies.studentToken;
+    if (!studentToken) return response.res401(res)
+    console.log({studentToken})
+    const user = await getStudentRefreshToken(studentToken);
     if (!user[0]) return response.res401(res);
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_STUDENT, (error, decoded) => {
+    jwt.verify(studentToken, process.env.REFRESH_TOKEN_SECRET_STUDENT, (error, decoded) => {
       if (error) return response.res401(res)
       const { id: userId, email, fullname: name } = user[0]
       const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET_STUDENT, {

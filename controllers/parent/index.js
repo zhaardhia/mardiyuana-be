@@ -33,18 +33,18 @@ exports.login = async (req, res, next) => {
     expiresIn: '20s'
   })
 
-  const refreshToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET_PARENT, {
+  const parentToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET_PARENT, {
     expiresIn: '1d'
   })
-  console.log({ refreshToken })
+  console.log({ parentToken })
   try {
-    await updateParentRefreshToken(userId, refreshToken)
+    await updateParentRefreshToken(userId, parentToken)
   } catch (error) {
     console.error(error)
     return response.res400(res, "failed update token")
   }
 
-  res.cookie('refreshToken', refreshToken, {
+  res.cookie('parentToken', parentToken, {
     // httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
     // domain: 'https://mertapada-investor-frontend2.vercel.app',
@@ -56,18 +56,19 @@ exports.login = async (req, res, next) => {
     // path: "/",
     // sameSite: "None"
   })
-  return response.res200(res, "000", "Login Berhasil.", { accessToken, refreshToken })
+  return response.res200(res, "000", "Login Berhasil.", { accessToken, parentToken })
 }
 
 exports.refreshParentToken = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) return response.res401(res)
-    console.log({refreshToken})
-    const user = await getParentRefreshToken(refreshToken);
+    const parentToken = req.cookies.parentToken;
+    if (!parentToken) return response.res401(res)
+    console.log({parentToken})
+    const user = await getParentRefreshToken(parentToken);
+    console.log({user})
     if (!user[0]) return response.res401(res);
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_PARENT, (error, decoded) => {
+    jwt.verify(parentToken, process.env.REFRESH_TOKEN_SECRET_PARENT, (error, decoded) => {
       if (error) return response.res401(res)
       const { id: userId, email, fullname: name } = user[0]
       const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET_PARENT, {

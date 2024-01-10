@@ -175,18 +175,18 @@ exports.login = async (req, res, next) => {
     expiresIn: '20s'
   })
 
-  const refreshToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET_TEACHER, {
+  const teacherToken = jwt.sign({ userId, name, username }, process.env.REFRESH_TOKEN_SECRET_TEACHER, {
     expiresIn: '1d'
   })
-  console.log({ refreshToken })
+  console.log({ teacherToken })
   try {
-    await updateTeacherRefreshToken(userId, refreshToken)
+    await updateTeacherRefreshToken(userId, teacherToken)
   } catch (error) {
     console.error(error)
     return response.res400(res, "failed update token")
   }
 
-  res.cookie('refreshToken', refreshToken, {
+  res.cookie('teacherToken', teacherToken, {
     // httpOnly: true,
     maxAge: 24 * 60 * 60 * 10,
     // domain: 'https://mertapada-investor-frontend2.vercel.app',
@@ -198,20 +198,20 @@ exports.login = async (req, res, next) => {
     // path: "/",
     // sameSite: "None"
   })
-  return response.res200(res, "000", "Login Berhasil.", { accessToken, refreshToken })
+  return response.res200(res, "000", "Login Berhasil.", { accessToken, teacherToken })
 }
 
 exports.refreshTeacherToken = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const teacherToken = req.cookies.teacherToken;
 
-    if (!refreshToken) return response.res401(res)
-    console.log({refreshToken})
-    const user = await getTeacherRefreshToken(refreshToken);
+    if (!teacherToken) return response.res401(res)
+    console.log({teacherToken})
+    const user = await getTeacherRefreshToken(teacherToken);
     console.log({user})
     if (!user[0]) return response.res401(res);
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_TEACHER, (error, decoded) => {
+    jwt.verify(teacherToken, process.env.REFRESH_TOKEN_SECRET_TEACHER, (error, decoded) => {
       if (error) return response.res401(res)
       const { id: userId, email, fullname: name } = user[0]
       const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET_TEACHER, {
