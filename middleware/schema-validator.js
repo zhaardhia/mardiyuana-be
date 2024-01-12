@@ -137,3 +137,10 @@ module.exports.GET_LIST_CLASSMATE = {
   pageSize: { type: 'number', positive: true, integer: true },
   studentName: { type: "string", min: 0, optional: true }, 
 }
+
+// EDIT PASSWORD
+module.exports.EDIT_PASSWORD = {
+  oldPassword: { type: 'string', min: 4 },
+  newPassword: { type: 'string', min: 4 },
+  confirmNewPassword: { type: "equal", field: "newPassword" }
+}

@@ -204,7 +204,7 @@ exports.login = async (req, res, next) => {
   const name = user.fullname
   const email = user.email
   const username = user.username
-
+  console.log({userId})
   const accessToken = jwt.sign({ userId, name, username }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: '20s'
   })
@@ -214,7 +214,8 @@ exports.login = async (req, res, next) => {
   })
   console.log({ refreshToken })
   try {
-    await updateRefreshToken(userId, refreshToken)
+   const respon = await updateRefreshToken(userId, refreshToken)
+   console.log({respon})
   } catch (error) {
     console.error(error)
     return response.res400(res, "failed update token")
@@ -239,7 +240,7 @@ exports.refreshToken = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) return response.res401(res)
-
+    console.log({refreshToken})
     const user = await getRefreshToken(refreshToken);
     if (!user[0]) return response.res401(res);
 

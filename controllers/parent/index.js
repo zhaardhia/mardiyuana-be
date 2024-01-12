@@ -3,10 +3,13 @@
 const response = require("../../components/response")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const Validator = require("fastest-validator");
+const v = new Validator();
+const { EDIT_PASSWORD } = require("../../middleware/schema-validator")
 const { db, parent } = require("../../components/database");
 const { nanoid } = require("nanoid");
 const { validationEmail } = require("../../middleware/validator")
-const { getParentByUsername, getParentRefreshToken, updateParentRefreshToken } = require("../query/parent")
+const { getParentByUsername, getParentProfileById, updatePassword, getParentById, getParentRefreshToken, updateParentRefreshToken } = require("../query/parent")
 // const { forgotPass } = require("../../libs/email")
 
 exports.login = async (req, res, next) => {
@@ -79,5 +82,48 @@ exports.refreshParentToken = async (req, res, next) => {
     })
   } catch (error) {
     console.error(error)
+  }
+}
+
+exports.editPasswordParent = async (req, res, next) => {
+  const { user } = req
+  const payloadCheck = await v.compile(EDIT_PASSWORD);
+  const resPayloadCheck = await payloadCheck(req.body);
+
+  if (resPayloadCheck !== true) {
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+  try {
+    const { oldPassword, newPassword, confirmNewPassword } = req.body
+
+    const userInfo = await getParentById(user.userId);
+    if (!userInfo) return response.res400(res, "Akun tidak ditemukan.");
+
+    const match = await bcrypt.compare(oldPassword, userInfo.password)
+    if (!match) return response.res400(res, "Password lama salah.")
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    await updatePassword(user.userId, hashPassword)
+
+    return response.res200(res, "000", "Sukses ganti password.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal ganti password.")
+  }
+}
+
+exports.getProfileData = async (req, res, next) => {
+  try {
+    const { user } = req
+    const userInfo = await getParentById(user.userId);
+    if (!userInfo) return response.res400(res, "Akun tidak ditemukan.");
+
+    const profileData = await getParentProfileById(user.userId)
+    return response.res200(res, "000", "Berhasil mendapatkan data profile.", profileData)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal mendapatkan data profile.")
   }
 }

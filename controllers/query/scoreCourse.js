@@ -74,11 +74,12 @@ exports.getListScoreCourseStudentPage = async (page, pageSize, scoreCourseId) =>
   })
 }
 
-exports.getDetailScoreCourseStudent = async (scoreCourseId) => {
+exports.getDetailScoreCourseStudent = async (scoreCourseId, studentId) => {
   return score_course_student.findOne({
     raw: true,
     where: {
-      scoreCourseId
+      scoreCourseId,
+      studentId
     },
     attributes: ["id", "scoreCourseId", "score", "status", "type"]
   })

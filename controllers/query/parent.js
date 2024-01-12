@@ -8,6 +8,38 @@ const {
   parent
 } = require("../../components/database");
 
+exports.getParentById = async (id) => {
+  return parent.findOne({
+    raw:true,
+    where: {
+      id
+    }
+  })
+}
+
+exports.getParentProfileById = async (id) => {
+  return parent.findOne({
+    raw:true,
+    where: {
+      id
+    },
+    attributes: ["id", "fullname", "name", "email", "username", "phone"]
+  })
+}
+
+exports.updatePassword = async (userId, password) => {
+  return parent.update(
+    {
+      password
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
 exports.getParentByUsername = async (username) => {
   return parent.findOne({
     raw:true,

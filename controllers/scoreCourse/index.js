@@ -129,11 +129,16 @@ exports.getAllScoreCourseWithScore = async (req, res, next) => {
 
     const listScoreCourse = await Promise.all(
       getListScoreCourse.map( async (scoreCourse) => {
-        const detailScoreCourse = await getDetailScoreCourseStudent(scoreCourse.id)
+        const detailScoreCourse = await getDetailScoreCourseStudent(scoreCourse.id, user.studentId)
         return { ...scoreCourse, ...detailScoreCourse }
       })
     )
-
+    // {
+    //   "id": "IXuBWuCmb9uSqoJXm7TWXoE8OBRaFU6jSoOg",
+    //   "title": "Aljabar hehehe",
+    //   "scoreDue": "2024-01-15T10:15:56.000Z",
+    //   "updatedDate": "2024-01-07T10:15:56.000Z"
+    // }
     return response.res200(res, "000", "Sukses mendapatkan data tugas / ulangan.", listScoreCourse)
   } catch (error) {
     console.log(error)

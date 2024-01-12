@@ -2,7 +2,7 @@ const apicache = require("apicache");
 const cache = apicache.middleware;
 const response = require("../../components/response");
 const { body, param, query, validationResult } = require("express-validator");
-// const validator = require("../../middlewares/validator");
+const { verifyTokenParent } = require("../../middleware/token");
 // const verifyToken = require("../../middlewares/verifyToken")
 const express = require("express");
 const router = express.Router();
@@ -30,6 +30,21 @@ router.route("/refresh-token")
     });
   })
 
+router.route("/edit-password")
+  .put(verifyTokenParent, (req, res, next) => {
+    parentController.editPasswordParent(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/profile-data")
+  .get(verifyTokenParent, (req, res, next) => {
+    parentController.getProfileData(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.all("*", index);
 

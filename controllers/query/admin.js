@@ -20,7 +20,8 @@ exports.getOperatorByUsername = async (username) => {
 exports.updateRefreshToken = async (userId, refresh_token) => {
   return admin.update(
     {
-      refresh_token
+      refresh_token,
+      updatedDate: new Date()
     },
     {
       where: {
