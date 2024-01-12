@@ -8,6 +8,39 @@ const {
   student, parent, enrollment_student
 } = require("../../components/database");
 
+exports.getStudentById = async (id) => {
+  return student.findOne({
+    raw:true,
+    where: {
+      id
+    }
+  })
+}
+
+exports.getStudentProfileById = async (id) => {
+  return student.findOne({
+    raw:true,
+    where: {
+      id
+    },
+    attributes: ["id", "fullname", "name", "email", "username", "phone"]
+  })
+}
+
+exports.updatePassword = async (userId, password) => {
+  return student.update(
+    {
+      password,
+      updatedDate: new Date()
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
 exports.checkExistingStudent = async (id) => {
   return student.findOne({
     raw: true,

@@ -129,7 +129,7 @@ exports.getAllScoreCourseWithScore = async (req, res, next) => {
 
     const listScoreCourse = await Promise.all(
       getListScoreCourse.map( async (scoreCourse) => {
-        const detailScoreCourse = await getDetailScoreCourseStudent(scoreCourse.id, user.studentId)
+        const detailScoreCourse = await getDetailScoreCourseStudent(scoreCourse.id, user.isParent ? user.studentId : user.userId)
         return { ...scoreCourse, ...detailScoreCourse }
       })
     )

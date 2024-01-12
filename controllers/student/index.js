@@ -5,7 +5,7 @@ const { db, student, parent, enrollment_student } = require("../../components/da
 const { nanoid } = require("nanoid");
 const jwt = require("jsonwebtoken")
 const { validationEmail } = require("../../middleware/validator")
-const { GET_LIST_STUDENT_TABLE_ADMIN } = require("../../middleware/schema-validator")
+const { GET_LIST_STUDENT_TABLE_ADMIN, EDIT_PASSWORD } = require("../../middleware/schema-validator")
 const Validator = require("fastest-validator");
 const v = new Validator();
 const { 
@@ -18,7 +18,10 @@ const {
   getDetailStudentAdminEnrolled,
   updateStudentRefreshToken,
   getStudentRefreshToken,
-  getStudentByUsername
+  getStudentByUsername,
+  getStudentById,
+  getStudentProfileById,
+  updatePassword
 } = require("../query/student")
 const { 
   checkAcademicYearThatActive
@@ -268,5 +271,48 @@ exports.refreshStudentToken = async (req, res, next) => {
     })
   } catch (error) {
     console.error(error)
+  }
+}
+
+exports.editPasswordStudent = async (req, res, next) => {
+  const { user } = req
+  const payloadCheck = await v.compile(EDIT_PASSWORD);
+  const resPayloadCheck = await payloadCheck(req.body);
+
+  if (resPayloadCheck !== true) {
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+  try {
+    const { oldPassword, newPassword, confirmNewPassword } = req.body
+
+    const userInfo = await getStudentById(user.userId);
+    if (!userInfo) return response.res400(res, "Akun tidak ditemukan.");
+
+    const match = await bcrypt.compare(oldPassword, userInfo.password)
+    if (!match) return response.res400(res, "Password lama salah.")
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    await updatePassword(user.userId, hashPassword)
+
+    return response.res200(res, "000", "Sukses ganti password.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal ganti password.")
+  }
+}
+
+exports.getProfileData = async (req, res, next) => {
+  try {
+    const { user } = req
+    const userInfo = await getStudentById(user.userId);
+    if (!userInfo) return response.res400(res, "Akun tidak ditemukan.");
+
+    const profileData = await getStudentProfileById(user.userId)
+    return response.res200(res, "000", "Berhasil mendapatkan data profile.", profileData)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal mendapatkan data profile.")
   }
 }

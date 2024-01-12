@@ -8,6 +8,7 @@ const express = require("express");
 const router = express.Router();
 
 const studentController = require("../../controllers/student");
+const { verifyTokenStudent } = require("../../middleware/token");
 
 const index = function (req, res, next) {
   response.res404(res);
@@ -25,6 +26,22 @@ router.route("/login")
 router.route("/refresh-token")
   .get((req, res, next) => {
     studentController.refreshStudentToken(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/edit-password")
+  .put(verifyTokenStudent, (req, res, next) => {
+    studentController.editPasswordStudent(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/profile-data")
+  .get(verifyTokenStudent, (req, res, next) => {
+    studentController.getProfileData(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });
