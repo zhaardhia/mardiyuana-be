@@ -28,6 +28,13 @@ router.route("/")
     });
     // return response.res200(res, "000", "sukses bang")
   })
+  .delete(verifyTokenTeacher, (req, res, next) => {
+    teacherNoteController.deleteTeacherNotes(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+    // return response.res200(res, "000", "sukses bang")
+  })
 
 
 router.all("*", index);

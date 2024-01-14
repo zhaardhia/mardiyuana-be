@@ -26,6 +26,12 @@ router.route("/")
       return response.res500(res, "Internal system error, please try again later!");
     });
   })
+  .delete((req, res, next) => {
+    eventController.deleteEvent(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
 
 router.all("*", index);
 

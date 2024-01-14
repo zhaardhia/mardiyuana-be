@@ -4,7 +4,7 @@ const response = require("../../components/response")
 const { db, teacher } = require("../../components/database");
 const { nanoid } = require("nanoid");
 const { validationEmail } = require("../../middleware/validator")
-const { GET_LIST_TEACHER_TABLE_ADMIN } = require("../../middleware/schema-validator")
+const { GET_LIST_TEACHER_TABLE_ADMIN, EDIT_PASSWORD } = require("../../middleware/schema-validator")
 const Validator = require("fastest-validator");
 const v = new Validator();
 const bcrypt = require("bcryptjs")
@@ -15,7 +15,10 @@ const {
   getDetailTeacherAdmin,
   getTeacherByUsername,
   updateTeacherRefreshToken,
-  getTeacherRefreshToken
+  getTeacherRefreshToken,
+  updatePassword,
+  getTeacherById,
+  getTeacherProfileById
 } = require("../query/teacher")
 const {
   getAllEnrollAcademicTeacher
@@ -188,7 +191,7 @@ exports.login = async (req, res, next) => {
 
   res.cookie('teacherToken', teacherToken, {
     // httpOnly: true,
-    maxAge: 24 * 60 * 60 * 10,
+    maxAge: 24 * 60 * 60 * 1000,
     // domain: 'https://mertapada-investor-frontend2.vercel.app',
     // secure: true, // Use for HTTPS only
     // httpOnly: true, // Ensure the cookie is not accessible via JavaScript
@@ -222,5 +225,48 @@ exports.refreshTeacherToken = async (req, res, next) => {
     })
   } catch (error) {
     console.error(error)
+  }
+}
+
+exports.editPasswordTeacher = async (req, res, next) => {
+  const { user } = req
+  const payloadCheck = await v.compile(EDIT_PASSWORD);
+  const resPayloadCheck = await payloadCheck(req.body);
+
+  if (resPayloadCheck !== true) {
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+  try {
+    const { oldPassword, newPassword, confirmNewPassword } = req.body
+
+    const userInfo = await getTeacherById(user.userId);
+    if (!userInfo) return response.res400(res, "Akun tidak ditemukan.");
+
+    const match = await bcrypt.compare(oldPassword, userInfo.password)
+    if (!match) return response.res400(res, "Password lama salah.")
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    await updatePassword(user.userId, hashPassword)
+
+    return response.res200(res, "000", "Sukses ganti password.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal ganti password.")
+  }
+}
+
+exports.getProfileData = async (req, res, next) => {
+  try {
+    const { user } = req
+    const userInfo = await getTeacherProfileById(user.userId);
+    if (!userInfo) return response.res400(res, "Akun tidak ditemukan.");
+
+    const profileData = await getTeacherProfileById(user.userId)
+    return response.res200(res, "000", "Berhasil mendapatkan data profile.", profileData)
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Gagal mendapatkan data profile.")
   }
 }

@@ -51,27 +51,30 @@ exports.getListScoreCourseStudentPage = async (page, pageSize, scoreCourseId) =>
   const studentAssociate = score_course_student.hasOne(student, {foreignKey: "id", sourceKey: "studentId"})
   const classAssociate = score_course_student.hasOne(school_class, {foreignKey: "id", sourceKey: "classId"})
 
-  return score_course_student.findAll({
+  const result = await score_course_student.findAll({
     include: [
       {
         association: studentAssociate,
         attributes: ["id", "fullname"],
-        // required: true,
+        required: false,
       },
       {
         association: classAssociate,
         attributes: ["id", "name"],
-        // required: true,
+        required: false,
       }
     ],
     limit: pageSize + 1,
     offset: (page - 1) * pageSize,
-    order: [['createdDate', 'DESC']],
+    order: [['createdDate', 'DESC'], ['id', 'DESC']],
     // raw: true,
     where: {
       scoreCourseId
     }
   })
+  console.log({result})
+  const resultJSON = result ? result.map(result => result.toJSON()) : null;
+  return resultJSON
 }
 
 exports.getDetailScoreCourseStudent = async (scoreCourseId, studentId) => {

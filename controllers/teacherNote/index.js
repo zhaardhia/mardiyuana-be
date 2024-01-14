@@ -10,8 +10,7 @@ const { checkAcademicYearThatActive } = require("../query/academicYear")
 const { getStudentAndParent } = require("../query/student")
 const { checkTeacherFullname } = require("../query/teacher")
 const { checkSchoolClassStatus } = require("../query/schoolClass")
-const { insertTeacherNote, updateTeacherNote, getListTeacherNotesOnTeacher, getListTeacherNotesOnParent } = require("../query/teacherNote")
-
+const { insertTeacherNote, updateTeacherNote, getListTeacherNotesOnTeacher, getListTeacherNotesOnParent, deleteTeacherNote } = require("../query/teacherNote")
 
 exports.getAllTeacherNotes = async (req, res, next) => {
   const { user } = req
@@ -19,7 +18,7 @@ exports.getAllTeacherNotes = async (req, res, next) => {
 
   const { studentId, classId } = req.query
   if (!studentId || !classId) return response.res400(res, "studentId & classId is required.")
-
+  console.log({studentId, classId})
   try {
     const getActiveAcademicYear = await checkAcademicYearThatActive()
     const getListTeacherNotes = await getListTeacherNotesOnTeacher({ 
@@ -28,6 +27,7 @@ exports.getAllTeacherNotes = async (req, res, next) => {
       studentId,
       teacherId: user.userId
     })
+    console.log({getListTeacherNotes})
     if (getListTeacherNotes.length < 1) return response.res200(res, "001", "Belum ada notes.")
 
     return response.res200(res, "000", "Sukses mendapatkan data notes.", getListTeacherNotes)
@@ -108,6 +108,19 @@ exports.insertUpdateTeacherNote = async (req, res, next) => {
       await insertTeacherNote(payload)
       return response.res200(res, "000", "Sukses memasukkan data notes.")
     }
+  } catch (error) {
+    console.log(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
+
+exports.deleteTeacherNotes = async (req, res, next) => {
+  const { id } = req.body
+  if (!id) return response.res400(res, "id is required")
+
+  try {
+    await deleteTeacherNote({ id })
+    return response.res200(res, "000", "Sukses menghapus notes.")
   } catch (error) {
     console.log(error)
     return response.res200(res, "001", "Interaksi gagal.")

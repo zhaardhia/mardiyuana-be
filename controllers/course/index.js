@@ -122,15 +122,15 @@ exports.getListCourseStudent = async (req, res, next) => {
     const optionEnrollment = await Promise.all(
       getAllEnrollmentStudent.map(async (enrollment) => {
         const academicYearStudent = await checkAcademicYearIsRegistered(enrollment.academicYearId);
-
-        if (academicYearId && academicYearId === enrollment.academicYeariD) {
+        console.log({academicYearId, enrollment})
+        if (academicYearId && academicYearId === enrollment.academicYearId) {
           const allCourse = await getAllCourseByCurriculumIdAndGrade({ 
             curriculumId: academicYearStudent.curriculumId,
             grade: Number(enrollment.className.charAt(0)),
             academicYearId: academicYearId,
             className: enrollment.className
           })
-
+          console.log("masuk ay")
           listCourse = [...allCourse];
         } else if (!academicYearId && enrollment.status === "ACTIVE") {
           const allCourse = await getAllCourseByCurriculumIdAndGrade({ 

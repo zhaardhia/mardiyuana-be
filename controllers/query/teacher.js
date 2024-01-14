@@ -8,6 +8,39 @@ const {
   teacher
 } = require("../../components/database");
 
+exports.getTeacherById = async (id) => {
+  return teacher.findOne({
+    raw:true,
+    where: {
+      id
+    }
+  })
+}
+
+exports.getTeacherProfileById = async (id) => {
+  return teacher.findOne({
+    raw:true,
+    where: {
+      id
+    },
+    attributes: ["id", "fullname", "name", "email", "username", "phone", "startAt"]
+  })
+}
+
+exports.updatePassword = async (userId, password) => {
+  return teacher.update(
+    {
+      password,
+      updatedDate: new Date()
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
 exports.checkTeacherFullname = async (id) => {
   return teacher.findOne({
     raw: true,

@@ -58,3 +58,19 @@ exports.getAllAnnouncements = async (req, res, next) => {
   })
   return response.res200(res, "000", "success get all announcement data.", getAllAnnouncementData || []);
 }
+
+exports.deleteEvent = async (req, res, next) => {
+  const { id } = req.body
+  if (!id) return response.res400(res, "id is required.")
+
+  try {
+    await announcement.destroy({
+      where: { id }
+    })
+
+    return response.res200(res, "000", "Sukses menghapus announcement.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}

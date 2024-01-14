@@ -3,7 +3,7 @@ const cache = apicache.middleware;
 const response = require("../../components/response");
 const { body, param, query, validationResult } = require("express-validator");
 // const validator = require("../../middlewares/validator");
-// const verifyToken = require("../../middlewares/verifyToken")
+const { verifyTokenTeacher } = require("../../middleware/token")
 const express = require("express");
 const router = express.Router();
 
@@ -25,6 +25,22 @@ router.route("/login")
 router.route("/refresh-token")
   .get((req, res, next) => {
     teacherController.refreshTeacherToken(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/edit-password")
+  .put(verifyTokenTeacher, (req, res, next) => {
+    teacherController.editPasswordTeacher(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/profile-data")
+  .get(verifyTokenTeacher, (req, res, next) => {
+    teacherController.getProfileData(req, res).catch((error) => {
       console.error(error);
       return response.res500(res, "Internal system error, please try again later!");
     });

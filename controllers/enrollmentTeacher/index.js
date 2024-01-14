@@ -13,7 +13,8 @@ const {
   checkTeacherIsAlreadyRegisteredAsHomeroom,
   getAllEnrolledTeacherClassByAcademicYear,
   getActiveHomeroomTeacher,
-  getClassCourseAndAcademicYearByEnrollmentTeacherId
+  getClassCourseAndAcademicYearByEnrollmentTeacherId,
+  getTeacherByEnrollment
 } = require("../query/enrollmentTeacher")
 const { 
   checkSchoolClassStatus,
@@ -262,11 +263,13 @@ exports.getInitialDataInCourseDetail = async (req, res, next) => {
     const courseDetail = await getInitialCourseDetailById({ id: courseId })
     const classDetail = await checkSchoolClassStatus(classId)
     const academicYear = await getDetailAcademicYear({ academicYearId })
+    const teacherData = await getTeacherByEnrollment(academicYearId, classId, courseId)
 
     return response.res200(res, "000", "Sukses mendapatkan initial data untuk detail kelas.", {
       course: courseDetail,
       class: classDetail,
-      academicYear: academicYear
+      academicYear: academicYear,
+      teacherData
     })
   } catch (error) {
     console.error(error)
@@ -278,11 +281,12 @@ exports.getCourseClassDetailTeacher = async (req, res, next) => {
   const { user } = req
   if (!user) return response.res400(res, "user is not logged in.")
 
-  const { courseId, classId } = req.query;
-  if (!courseId || !classId) return response.res400(res, "courseId & classId is required.")
+  const { courseId } = req.query;
+  if (!courseId) return response.res400(res, "courseId is required.")
 
   try {
     const getDetailCourse = await getCourseDetailById({ id: courseId });
+    console.log({getDetailCourse})
     if (getDetailCourse.length < 1) return response.res200(res, "001", "Pelajaran tidak terdaftar")
 
     const courseSections = getDetailCourse.course_sections.map((section) => {

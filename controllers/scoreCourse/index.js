@@ -149,14 +149,18 @@ exports.getAllScoreCourseWithScore = async (req, res, next) => {
 exports.insertUpdateScoreCourse = async (req, res, next) => {
   const { user } = req
   if (!user) return response.res400(res, "user is not logged in.")
+  const payload = {
+    ...req.body,
+    scoreDue: new Date(req.body.scoreDue)
+  }
 
   const payloadCheck = await v.compile(INSERT_UPDATE_SCORE_COURSE);
-  const resPayloadCheck = await payloadCheck(req.body);
+  const resPayloadCheck = await payloadCheck(payload);
 
   if (resPayloadCheck !== true) {
     return response.res400(res, resPayloadCheck[0].message)
   }
-  const { id, title, body, type, classId, courseId, scoreDue } = req.body
+  const { id, title, body, type, classId, courseId, scoreDue } = payload
   const dbTransaction = !id ? await db.transaction() : null
 
   try {
@@ -213,7 +217,7 @@ exports.insertUpdateScoreCourse = async (req, res, next) => {
       await insertScoreCourseStudent(mapStudentPayload, dbTransaction)
 
       await dbTransaction.commit()
-      return response.res200(res, "000", "Sukses memasukkan data score murid.")
+      return response.res200(res, "000", "Sukses memasukkan data score murid.", { id: scoreCourseId })
     }
   } catch (error) {
     console.log(error)
@@ -247,6 +251,7 @@ exports.getListScoreCourseStudent = async (req, res, next) => {
       pageSize,
       scoreCourseId
     )
+    console.log({getListStudents})
     const totalData = await totalCountListScoreCourseStudentPage(
       scoreCourseId
     );

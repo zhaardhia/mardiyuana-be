@@ -67,3 +67,19 @@ exports.getAllEvents = async (req, res, next) => {
   })
   return response.res200(res, "000", "success get all event data.", getAllEventData || []);
 }
+
+exports.deleteEvent = async (req, res, next) => {
+  const { id } = req.body
+  if (!id) return response.res400(res, "id is required.")
+
+  try {
+    await event.destroy({
+      where: { id }
+    })
+
+    return response.res200(res, "000", "Sukses menghapus event.")
+  } catch (error) {
+    console.error(error)
+    return response.res200(res, "001", "Interaksi gagal.")
+  }
+}
