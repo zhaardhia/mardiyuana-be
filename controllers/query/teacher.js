@@ -130,3 +130,50 @@ exports.getTeacherRefreshToken = async (refresh_token) => {
     }
   })
 }
+
+exports.getUserEmailByEmail = async ({ email }) => {
+  return teacher.findOne({
+    raw: true,
+    where: { email },
+    attributes: ["id", "email"]
+  })
+}
+
+exports.updateForgotPassToken = async ({ userId, forgotPasswordToken, forgotPasswordTokenExpiredAt }) => {
+  return teacher.update(
+    {
+      forgotPasswordToken,
+      forgotPasswordTokenExpiredAt
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
+exports.getTokenForgotPass = async ({ forgotPasswordToken }) => {
+  return teacher.findOne({
+    raw: true,
+    where: {
+      forgotPasswordToken,
+    },
+    attributes: ["id", "email", "forgotPasswordToken", "forgotPasswordTokenExpiredAt"]
+  })
+}
+
+exports.changePassword = async ({ id, password }) => {
+  return teacher.update(
+    {
+      password,
+      forgotPasswordToken: null,
+      forgotPasswordTokenExpiredAt: null
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}

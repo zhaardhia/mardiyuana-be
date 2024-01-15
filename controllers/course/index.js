@@ -132,6 +132,14 @@ exports.getListCourseStudent = async (req, res, next) => {
           })
           console.log("masuk ay")
           listCourse = [...allCourse];
+
+          // if (enrollment.status === "ACTIVE") {
+            enrollment_student.id = enrollment.id
+            enrollment_student.classId = enrollment.classId
+            enrollment_student.className = enrollment.className
+            enrollment_student.academicYearId = enrollment.academicYearId
+            enrollment_student.academicYear = enrollment.academicYear
+          // } 
         } else if (!academicYearId && enrollment.status === "ACTIVE") {
           const allCourse = await getAllCourseByCurriculumIdAndGrade({ 
             curriculumId: academicYearStudent.curriculumId,
@@ -153,7 +161,7 @@ exports.getListCourseStudent = async (req, res, next) => {
         }
       })
     );
-
+    console.log({enrollment_student})
     const responseObj = {
       optionEnrollment,
       listCourse,

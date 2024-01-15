@@ -386,6 +386,7 @@ exports.homeroomClassTeacher = async (req, res, next) => {
 
     const responseData = {
       listStudents: [...getListStudents],
+      classData: { name: getTeacherEnrollment.className },
       totalData,
       totalPages,
       nextPage

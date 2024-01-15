@@ -63,6 +63,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(1000),
       allowNull: true
     },
+    forgotPasswordToken: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    forgotPasswordTokenExpiredAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
     createdDate: {
       type: DataTypes.DATE,
       allowNull: true

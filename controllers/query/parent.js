@@ -70,3 +70,50 @@ exports.getParentRefreshToken = async (refresh_token) => {
     }
   })
 }
+
+exports.getUserEmailByEmail = async ({ email }) => {
+  return parent.findOne({
+    raw: true,
+    where: { email },
+    attributes: ["id", "email"]
+  })
+}
+
+exports.updateForgotPassToken = async ({ userId, forgotPasswordToken, forgotPasswordTokenExpiredAt }) => {
+  return parent.update(
+    {
+      forgotPasswordToken,
+      forgotPasswordTokenExpiredAt
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
+exports.getTokenForgotPass = async ({ forgotPasswordToken }) => {
+  return parent.findOne({
+    raw: true,
+    where: {
+      forgotPasswordToken,
+    },
+    attributes: ["id", "email", "forgotPasswordToken", "forgotPasswordTokenExpiredAt"]
+  })
+}
+
+exports.changePassword = async ({ id, password }) => {
+  return parent.update(
+    {
+      password,
+      forgotPasswordToken: null,
+      forgotPasswordTokenExpiredAt: null
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}

@@ -47,6 +47,22 @@ router.route("/profile-data")
     });
   })
 
+router.route("/access-change-password")
+  .post((req, res, next) => {
+    studentController.sendEmailAddressForgotPass(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
+router.route("/change-password")
+  .post((req, res, next) => {
+    studentController.changePasswordForgotPass(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 
 router.all("*", index);
 

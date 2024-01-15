@@ -53,6 +53,7 @@ exports.listAllClassmates = async (req, res, next) => {
 
     const responseData = {
       listStudents: [...getListStudents],
+      classData: { name: getStudentEnrollment.className },
       totalData,
       totalPages,
       nextPage

@@ -5,12 +5,24 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const Validator = require("fastest-validator");
 const v = new Validator();
-const { EDIT_PASSWORD } = require("../../middleware/schema-validator")
+const { EDIT_PASSWORD, CHANGE_PASSWORD } = require("../../middleware/schema-validator")
 const { db, parent } = require("../../components/database");
 const { nanoid } = require("nanoid");
 const { validationEmail } = require("../../middleware/validator")
-const { getParentByUsername, getParentProfileById, updatePassword, getParentById, getParentRefreshToken, updateParentRefreshToken } = require("../query/parent")
-// const { forgotPass } = require("../../libs/email")
+const { 
+  getParentByUsername,
+  getParentProfileById,
+  updatePassword,
+  getParentById,
+  getParentRefreshToken, 
+  updateParentRefreshToken,
+  getUserEmailByEmail,
+  updateForgotPassToken,
+  getTokenForgotPass,
+  changePassword
+} = require("../query/parent")
+const { sendEmailUser } = require("../utils/function")
+const moment = require("moment")
 
 exports.login = async (req, res, next) => {
   const payload = {
@@ -125,5 +137,60 @@ exports.getProfileData = async (req, res, next) => {
   } catch (error) {
     console.error(error)
     return response.res200(res, "001", "Gagal mendapatkan data profile.")
+  }
+}
+
+exports.sendEmailAddressForgotPass = async (req, res, next) => {
+  if (!req.body.email) return response.res400(res, "email is required.")
+  if (!validationEmail(req.body.email)) return response.res400(res, "input Email must be valid format.")
+
+  const checkEmail = await getUserEmailByEmail({ email: req.body.email });
+  if (!checkEmail) return response.res400(res, "email is not registered.")
+
+  const forgotPassToken = nanoid(10)
+  try {
+    const forgotPassTokenExpired = moment().add(1, 'hour');
+    await updateForgotPassToken({ 
+      userId: checkEmail.id,
+      forgotPasswordToken: forgotPassToken,
+      forgotPasswordTokenExpiredAt: forgotPassTokenExpired 
+    })
+
+    const options = {
+      from: "'SMP Mardiyuana' <firzharamadhan27@gmail.com>",
+      to: checkEmail.email,
+      subject: "Change Password Account",
+      html: `
+        <p>Click this link to continue changing your password: ${process.env.URL_CHANGE_PASSWORD_PARENT}/${forgotPassToken}. Thank you!</p>
+      `
+    };
+    sendEmailUser(options)
+    return response.res200(res, "000", "access change password already sent to your email.")
+  } catch (error) {
+    console.error(error)
+    return response.res400(res, error.message)
+  }
+}
+
+exports.changePasswordForgotPass = async (req, res, next) => {
+  const payloadCheck = await v.compile(CHANGE_PASSWORD);
+  const resPayloadCheck = await payloadCheck(req.body);
+  if (resPayloadCheck !== true) {
+    return response.res400(res, resPayloadCheck[0].message)
+  }
+
+  const { forgotPassToken, password } = req.body;
+  const checkToken = await getTokenForgotPass({ forgotPasswordToken: forgotPassToken })
+  if (!checkToken || moment().isAfter(moment(checkToken.forgotPasswordTokenExpiredAt))) return response.res400(res, "failed to change password. please request link again")
+
+  try {
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+    
+    await changePassword({ id: checkToken.id, password: hashPassword })
+    return response.res200(res, "000", "password has been changed successfully")
+  } catch (error) {
+    console.error(error)
+    return response.res400(res, error.message)
   }
 }

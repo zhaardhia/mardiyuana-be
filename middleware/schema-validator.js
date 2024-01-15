@@ -144,3 +144,9 @@ module.exports.EDIT_PASSWORD = {
   newPassword: { type: 'string', min: 4 },
   confirmNewPassword: { type: "equal", field: "newPassword" }
 }
+
+module.exports.CHANGE_PASSWORD = {
+  forgotPassToken: { type: "string", min: 3, max: 50 },
+  password: { type: "string", min: 3, max: 50 },
+  confirmPassword: { type: "equal", field: "password" },
+}

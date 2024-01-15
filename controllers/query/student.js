@@ -358,3 +358,50 @@ exports.getStudentAndParent = async ({ studentId }) => {
     attributes: ["id", "parentId"]
   })
 }
+
+exports.getUserEmailByEmail = async ({ email }) => {
+  return student.findOne({
+    raw: true,
+    where: { email },
+    attributes: ["id", "email"]
+  })
+}
+
+exports.updateForgotPassToken = async ({ userId, forgotPasswordToken, forgotPasswordTokenExpiredAt }) => {
+  return student.update(
+    {
+      forgotPasswordToken,
+      forgotPasswordTokenExpiredAt
+    },
+    {
+      where: {
+        id: userId
+      }
+    }
+  )
+}
+
+exports.getTokenForgotPass = async ({ forgotPasswordToken }) => {
+  return student.findOne({
+    raw: true,
+    where: {
+      forgotPasswordToken,
+    },
+    attributes: ["id", "email", "forgotPasswordToken", "forgotPasswordTokenExpiredAt"]
+  })
+}
+
+exports.changePassword = async ({ id, password }) => {
+  return student.update(
+    {
+      password,
+      forgotPasswordToken: null,
+      forgotPasswordTokenExpiredAt: null
+    },
+    {
+      where: {
+        id
+      }
+    }
+  )
+}
