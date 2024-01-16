@@ -194,3 +194,23 @@ exports.changePasswordForgotPass = async (req, res, next) => {
     return response.res400(res, error.message)
   }
 }
+
+exports.logout = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.parentToken;
+    console.log(refreshToken, req.cookies)
+    if (!refreshToken) return response.res200(res, "001", "No content")
+
+    const user = await getParentRefreshToken(refreshToken);
+    if (!user[0]) return response.res200(res, "001", "No content")
+
+    const userId = user[0].id
+
+    await updateParentRefreshToken(userId, null)
+    
+    res.clearCookie('parentToken')
+    return response.res200(res, "000", "Berhasil Logout.")
+  } catch (error) {
+    console.error(error)
+  }
+}

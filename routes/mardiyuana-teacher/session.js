@@ -62,6 +62,14 @@ router.route("/change-password")
     });
   })
 
+router.route("/logout-user")
+  .delete(verifyTokenTeacher, (req, res, next) => {
+    teacherController.logout(req, res).catch((error) => {
+      console.error(error);
+      return response.res500(res, "Internal system error, please try again later!");
+    });
+  })
+
 router.all("*", index);
 
 module.exports = router;

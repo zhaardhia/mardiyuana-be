@@ -331,3 +331,23 @@ exports.changePasswordForgotPass = async (req, res, next) => {
     return response.res400(res, error.message)
   }
 }
+
+exports.logout = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.teacherToken;
+    console.log(refreshToken, req.cookies)
+    if (!refreshToken) return response.res200(res, "001", "No content")
+
+    const user = await getTeacherRefreshToken(refreshToken);
+    if (!user[0]) return response.res200(res, "001", "No content")
+
+    const userId = user[0].id
+
+    await updateTeacherRefreshToken(userId, null)
+    
+    res.clearCookie('teacherToken')
+    return response.res200(res, "000", "Berhasil Logout.")
+  } catch (error) {
+    console.error(error)
+  }
+}
