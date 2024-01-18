@@ -14,7 +14,7 @@ exports.insertUpdateCourseSection = async (req, res, next) => {
   const resPayloadCheck = await payloadCheck(req.body);
 
   if (resPayloadCheck !== true) {
-    return response.res400(res, "Mohon cek kembali kelengkapan data yang telah dikirim.")
+    return response.res400(res, resPayloadCheck[0].message)
   }
 
   const { id, courseId, numberSection, name, description } = req.body

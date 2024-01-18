@@ -18,7 +18,7 @@ module.exports.INSERT_COURSE_SECTION = {
   id: { type: "string", min: 30, max: 40, optional: true }, 
   courseId: { type: "string", min: 30, max: 40 }, 
   numberSection: { type: 'number', integer: true, optional: true }, 
-  name: { type: "string", min: 10, max: 100 },
+  name: { type: "string", min: 4, max: 100 },
   description: { type: "string", min: 10, max: 500 }
 }
 

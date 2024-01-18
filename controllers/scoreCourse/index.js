@@ -205,6 +205,7 @@ exports.insertUpdateScoreCourse = async (req, res, next) => {
           scoreCourseId: scoreCourseId,
           score: 0,
           status: "NOT_DONE",
+          type,
           studentId: student.studentId,
           courseId,
           classId,

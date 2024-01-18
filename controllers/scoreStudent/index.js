@@ -67,9 +67,9 @@ exports.getStudentScoreData = async (req, res, next) => {
           else if (getAllScoreCourse.length === 1) objScoreType.scoreMean = getAllScoreCourse[0].score
           else {
             const accScore = getAllScoreCourse.reduce((acc, obj) => acc + obj.score, 0)
-            objScoreType.scoreMean = accScore > 0 ? accScore / getAllScoreCourse.length : accScore
+            objScoreType.scoreMean = accScore > 0 ? (accScore / getAllScoreCourse.length).toFixed(2) : accScore
           }
-          
+
           objScoreType.scoreCourseType = type
           objScoreType.scoreCourseDetail = getAllScoreCourse
 

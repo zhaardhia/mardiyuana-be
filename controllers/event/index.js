@@ -1,6 +1,12 @@
 const response = require("../../components/response")
 const { db, event } = require("../../components/database");
 const moment = require("moment");
+require('moment-timezone');
+
+moment.locale('id');
+
+// Set the timezone if needed (e.g., Asia/Jakarta)
+moment.tz.setDefault('Asia/Jakarta');
 const { isString } = require("../../middleware/validator");
 const { nanoid } = require("nanoid");
 const { getCurriculumActive } = require("../query/curriculum")
@@ -17,6 +23,7 @@ exports.insertUpdateEvent = async (req, res, next) => {
   }
 
   const { id, name, description, needVote, eventDate, imageUrl } = req.body
+  console.log({eventDate})
   try {
     if (!id) {
       const objResponse = {
@@ -24,7 +31,7 @@ exports.insertUpdateEvent = async (req, res, next) => {
         name,
         description,
         eventVoteType: needVote,
-        eventDate: new Date(eventDate),
+        eventDate: moment(eventDate),
         imageUrl,
         createdDate: new Date(),
         updatedDate: new Date()
